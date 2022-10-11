@@ -164,9 +164,9 @@ def _install_menu():
 
     from .command import reset_frame_range, reset_resolution
     add_command_callback(menu, menu_name + "Reset resolution",
-                         callback=lambda x: reset_resolution())
+                         callback=lambda: reset_resolution())
     add_command_callback(menu, menu_name + "Reset frame range",
-                         callback=lambda x: reset_frame_range())
+                         callback=lambda: reset_frame_range())
 
 
 def imprint(node, data, group="openpype"):
