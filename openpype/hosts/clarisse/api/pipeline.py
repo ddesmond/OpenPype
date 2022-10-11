@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import logging
 import contextlib
 from pyblish import api as pyblish
@@ -15,6 +16,7 @@ from openpype.pipeline import (
     register_creator_plugin_path,
     AVALON_CONTAINER_ID,
 )
+from openpype.tools.utils import host_tools
 from openpype.host import HostBase, ILoadHost, IWorkfileHost
 
 from openpype.hosts.clarisse import CLARISSE_ROOT_DIR
@@ -26,6 +28,11 @@ PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
 LOAD_PATH = os.path.join(PLUGINS_DIR, "load")
 CREATE_PATH = os.path.join(PLUGINS_DIR, "create")
 INVENTORY_PATH = os.path.join(PLUGINS_DIR, "inventory")
+
+
+self = sys.modules[__name__]
+self._menu = "Avalon>"
+self._menu_callbacks = {}    # store custom menu callbacks, see _install_menu
 
 
 class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
@@ -100,28 +107,65 @@ class clarisse_project_fileLogHandler(logging.Handler):
 
 
 def _install_menu():
-    ix.application.get_main_menu().add_command("OpenPype>")
-    ix.application.get_main_menu().add_command("OpenPype>Create")
-    ix.application.get_main_menu().add_command("OpenPype>Load")
-    ix.application.get_main_menu().add_command("OpenPype>Publish")
-    ix.application.get_main_menu().add_command("OpenPype>Manage")
-    ix.application.get_main_menu().add_command("OpenPype>Work file")
-    ix.application.get_main_menu().add_command("OpenPype>Project manager")
-    ix.application.get_main_menu().add_command("OpenPype>Reset resolution")
-    ix.application.get_main_menu().add_command("OpenPype>Reset frame range")
+    """Install Avalon menu into Clarisse main menu"""
 
+    def add_command_callback(menu,
+                             name,
+                             callback):
+        """Helper function to add menu command with Python callback
 
+        This allows us to avoid passing all commands as string script, like:
+            menu.add_command_as_script(
+                "ScriptingPython",
+                "Menu>Command",
+                "import avalon.tools.creator as tool; tool.show()"
+            )
 
-def _uninstall_menu():
-    ix.application.get_main_menu().remove_command("OpenPype>Create")
-    ix.application.get_main_menu().remove_command("OpenPype>Load")
-    ix.application.get_main_menu().remove_command("OpenPype>Publish")
-    ix.application.get_main_menu().remove_command("OpenPype>Manage")
-    ix.application.get_main_menu().remove_command("OpenPype>Work file")
-    ix.application.get_main_menu().remove_command("OpenPype>Project manager")
-    ix.application.get_main_menu().remove_command("OpenPype>Reset resolution")
-    ix.application.get_main_menu().remove_command("OpenPype>Reset frame range")
-    ix.application.get_main_menu().remove_command("OpenPype>")
+        """
+
+        # Store the callback
+        self._menu_callbacks[name] = callback
+
+        # Build the call by name (escape any extra ' in name)
+        cmd = (
+            "import avalon.clarisse.pipeline; "
+            "avalon.clarisse.pipeline._menu_callbacks['{name}']()"
+        ).format(name=name.replace("'", "\'"))
+        menu.add_command_as_script("ScriptingPython",
+                                   name,
+                                   cmd)
+
+    menu = ix.application.get_main_menu()
+
+    # Build top menu entry
+    menu_name = self._menu   # get menu name
+    menu.add_command(menu_name)
+
+    # Add commands
+    add_command_callback(menu, menu_name + "Create...",
+                         callback=lambda: host_tools.show_creator())
+    add_command_callback(menu, menu_name + "Load...",
+                         callback=lambda: host_tools.show_loader(
+                             use_context=True))
+    add_command_callback(menu, menu_name + "Publish...",
+                         callback=lambda: host_tools.show_publish())
+    add_command_callback(menu, menu_name + "Manage...",
+                         callback=lambda: host_tools.show_scene_inventory())
+    add_command_callback(menu, menu_name + "Library...",
+                         callback=lambda: host_tools.show_library_loader())
+
+    menu.add_command(menu_name + "{Work}")
+
+    add_command_callback(menu, menu_name + "Work Files",
+                         callback=lambda: host_tools.show_workfiles())
+
+    menu.add_command(menu_name + "{Utilities}")
+
+    from .command import reset_frame_range, reset_resolution
+    menu.add_command(menu_name + "Reset resolution",
+                     callback=lambda x: reset_resolution())
+    menu.add_command(menu_name + "Reset frame range",
+                     callback=lambda x: reset_frame_range())
 
 
 def imprint_container(tool,
