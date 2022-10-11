@@ -32,7 +32,7 @@ INVENTORY_PATH = os.path.join(PLUGINS_DIR, "inventory")
 
 
 self = sys.modules[__name__]
-self._menu = "Avalon>"
+self._menu = "OpenPype>"
 self._menu_callbacks = {}    # store custom menu callbacks, see _install_menu
 
 
@@ -129,8 +129,8 @@ def _install_menu():
 
         # Build the call by name (escape any extra ' in name)
         cmd = (
-            "import avalon.clarisse.pipeline; "
-            "avalon.clarisse.pipeline._menu_callbacks['{name}']()"
+            "import openpype.hosts.clarisse.api.pipeline; "
+            "openpype.hosts.clarisse.api.pipeline._menu_callbacks['{name}']()"
         ).format(name=name.replace("'", "\'"))
         menu.add_command_as_script("ScriptingPython",
                                    name,
