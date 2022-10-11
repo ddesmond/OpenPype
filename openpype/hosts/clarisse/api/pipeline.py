@@ -3,10 +3,11 @@ import os
 import sys
 import logging
 import contextlib
+from collections import OrderedDict
+
 from pyblish import api as pyblish
 
 import ix
-from . import command
 from . import lib
 import pyblish.api
 
@@ -168,23 +169,40 @@ def _install_menu():
                      callback=lambda x: reset_frame_range())
 
 
-def imprint_container(tool,
-                      name,
-                      namespace,
-                      context,
-                      loader=None):
-    """Imprint a Loader with metadata
+def imprint(node, data, group="openpype"):
+    """Store string attributes with value on a node
 
-    Containerisation enables a tracking of version, author and origin
-    for loaded assets.
+    Args:
+        node (framework.PyOfObject): The node to imprint data on.
+        data (dict): Key value pairs of attributes to create.
+        group (str): The Group to add the attributes to.
+
+    Returns:
+        None
+
+    """
+    for attr, value in data.items():
+
+        # Create the attribute
+        node.add_attribute(attr,
+                           ix.api.OfAttr.TYPE_STRING,
+                           ix.api.OfAttr.CONTAINER_SINGLE,
+                           ix.api.OfAttr.VISUAL_HINT_DEFAULT,
+                           group)
+
+        # Set the attribute's value
+        node.get_attribute(attr)[0] = str(value)
+
+
+def imprint_container(node, name, namespace, context, loader):
+    """Imprint `node` with container metadata.
 
     Arguments:
-        tool (object): The node in clarisse to imprint as container, usually a
-            Loader.
+        node (framework.PyOfObject): The node to containerise.
         name (str): Name of resulting assembly
         namespace (str): Namespace under which to host container
         context (dict): Asset information
-        loader (str, optional): Name of loader used to produce this container.
+        loader (str): Name of loader used to produce this container.
 
     Returns:
         None
@@ -194,35 +212,40 @@ def imprint_container(tool,
     data = [
         ("schema", "avalon-core:container-2.0"),
         ("id", AVALON_CONTAINER_ID),
-        ("name", str(name)),
-        ("namespace", str(namespace)),
-        ("loader", str(loader)),
-        ("representation", str(context["representation"]["_id"])),
+        ("name", name),
+        ("namespace", namespace),
+        ("loader", loader),
+        ("representation", context["representation"]["_id"])
     ]
 
-    keys = []
-    values = []
-    for key, value in data:
-        keys.append("{}.{}[0]".format(tool, key))
-        values.append(value)
-
-    ix.cmds.SetValues(keys, values)
+    # We use an OrderedDict to make sure the attributes
+    # are always created in the same order. This is solely
+    # to make debugging easier when reading the values in
+    # the attribute editor.
+    imprint(node, OrderedDict(data))
 
 
-def parse_container(tool):
+def parse_container(node):
     """Returns imprinted container data of a tool
 
     This reads the imprinted data from `imprint_container`.
 
     """
-    container = command.ix_select(tool)
+    # If not all required data return None
+    required = ['id', 'schema', 'name',
+                'namespace', 'loader', 'representation']
+    if not all(node.attribute_exists(attr) for attr in required):
+        return
 
-    keys = ["id", "name", "namespace", "loader", "representation"]
-    values = {}
-    for key in keys:
-        values[key] = container.get_attribute(key).get_string()
+    data = {attr: node.get_attribute(attr)[0] for attr in required}
 
-    return values
+    # Store the node's name
+    data["objectName"] = node.get_full_name()
+
+    # Store reference to the node object
+    data["node"] = node
+
+    return data
 
 
 def get_current_clarisseproject():
