@@ -14,6 +14,12 @@ class ClarisseAddon(OpenPypeModule, IHostAddon):
 
     def add_implementation_envs(self, env, app):
         """Modify environments to contain all required for implementation."""
+
+        startup_script = os.path.join(CLARISSE_ROOT_DIR,
+                                      "startup",
+                                      "startup.py")
+        env["CLARISSE_STARTUP_SCRIPT"] = startup_script
+
         # Set default environments if are not set via settings
         defaults = {
             "OPENPYPE_LOG_NO_COLORS": "True"
