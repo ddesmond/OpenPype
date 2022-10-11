@@ -155,6 +155,7 @@ class HostsEnumEntity(BaseEnumEntity):
         "aftereffects",
         "blender",
         "celaction",
+        "clarisse",
         "flame",
         "fusion",
         "harmony",

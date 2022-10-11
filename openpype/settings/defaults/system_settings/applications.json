@@ -974,6 +974,31 @@
             }
         }
     },
+    "clarisse": {
+        "enabled": true,
+        "label": "Clarisse",
+        "icon": "{}/app_icons/clarisse.png",
+        "host_name": "clarisse",
+        "environment": {},
+        "variants": {
+            "5-0-SP9": {
+                "use_python_2": false,
+                "executables": {
+                    "windows": [
+                        "C:\\Program Files\\Isotropix\\Clarisse 5.0 SP9\\Clarisse\\clarisse.exe"
+                    ],
+                    "darwin": [],
+                    "linux": []
+                },
+                "arguments": {
+                    "windows": [],
+                    "darwin": [],
+                    "linux": []
+                },
+                "environment": {}
+            }
+        }
+    },
     "harmony": {
         "enabled": true,
         "label": "Harmony",
