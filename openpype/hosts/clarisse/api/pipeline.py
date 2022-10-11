@@ -163,10 +163,10 @@ def _install_menu():
     menu.add_command(menu_name + "{Utilities}")
 
     from .command import reset_frame_range, reset_resolution
-    menu.add_command(menu_name + "Reset resolution",
-                     callback=lambda x: reset_resolution())
-    menu.add_command(menu_name + "Reset frame range",
-                     callback=lambda x: reset_frame_range())
+    add_command_callback(menu, menu_name + "Reset resolution",
+                         callback=lambda x: reset_resolution())
+    add_command_callback(menu, menu_name + "Reset frame range",
+                         callback=lambda x: reset_frame_range())
 
 
 def imprint(node, data, group="openpype"):
