@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def reset_frame_range():
-    """ Set timeine frame range.
+    """ Set timeline frame range.
     """
 
     asset_doc = get_current_project_asset()
@@ -33,6 +33,19 @@ def reset_frame_range():
         ix.cmds.SetValue(image + ".background.last_frame", frame_end)
         ix.cmds.SetCurrentFrameRange(float(frame_start), float(frame_end))
         log.info("Frame range set")
+
+
+def set_project_fps():
+    """ Set project fps.
+    """
+
+    asset_doc = get_current_project_asset()
+    asset_data = asset_doc["data"]
+
+    fps = float(asset_data.get("fps", 25))
+    with command_batch("OpenPype: set FPS"):
+        ix.cmds.SetFps(fps)
+        log.info("Project FPS set")
 
 
 def reset_resolution():

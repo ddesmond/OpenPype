@@ -117,22 +117,29 @@ def _install_menu():
 
         This allows us to avoid passing all commands as string script, like:
             menu.add_command_as_script(
-                "ScriptingPython",
+                "ScriptingPython2",
                 "Menu>Command",
                 "import avalon.tools.creator as tool; tool.show()"
             )
-
+        Clarisse running python2.7 should use ScriptingPython2
+        Clarisse running python3.7 should use ScriptingPython3
         """
 
         # Store the callback
         self._menu_callbacks[name] = callback
+
+        # check what python are we running:
+        if sys.version_info.major == 3:
+            py_clarisse_version = "ScriptingPython3"
+        else:
+            py_clarisse_version = "ScriptingPython2"
 
         # Build the call by name (escape any extra ' in name)
         cmd = (
             "import openpype.hosts.clarisse.api.pipeline; "
             "openpype.hosts.clarisse.api.pipeline._menu_callbacks['{name}']()"
         ).format(name=name.replace("'", "\'"))
-        menu.add_command_as_script("ScriptingPython",
+        menu.add_command_as_script("{}".format(py_clarisse_version),
                                    name,
                                    cmd)
 
@@ -162,12 +169,16 @@ def _install_menu():
 
     menu.add_command(menu_name + "{Utilities}")
 
-    from .command import reset_frame_range, reset_resolution
+    from .command import reset_frame_range, reset_resolution, set_project_fps
+
     add_command_callback(menu, menu_name + "Reset resolution",
                          callback=lambda: reset_resolution())
+
     add_command_callback(menu, menu_name + "Reset frame range",
                          callback=lambda: reset_frame_range())
 
+    add_command_callback(menu, menu_name + "Set Project FPS",
+                         callback=lambda: set_project_fps())
 
 def imprint(node, data, group="openpype"):
     """Store string attributes with value on a node
