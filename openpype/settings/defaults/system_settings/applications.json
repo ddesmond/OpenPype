@@ -976,7 +976,7 @@
     },
     "clarisse": {
         "enabled": true,
-        "label": "Clarisse",
+        "label": "Isotropix Clarisse",
         "icon": "{}/app_icons/clarisse.png",
         "host_name": "clarisse",
         "environment": {},
@@ -987,15 +987,26 @@
                     "windows": [
                         "C:\\Program Files\\Isotropix\\Clarisse 5.0 SP9\\Clarisse\\clarisse.exe"
                     ],
-                    "darwin": [],
+                    "darwin": ["/Applications/Isotropix/Clarisse 5.0 SP9/clarisse.app/Contents/MacOS/clarisse-py3"],
                     "linux": []
                 },
                 "arguments": {
-                    "windows": [],
-                    "darwin": [],
-                    "linux": []
+                    "windows": [
+                            "-flavor",
+                            "ifx"
+                                ],
+                    "darwin": [
+                            "-flavor",
+                            "ifx"
+                                ],
+                    "linux": [
+                            "-flavor",
+                            "ifx"
+                                ]
                 },
-                "environment": {}
+                "environment":  {
+                            "IX_PYTHON3PATH": "{PYTHONPATH}"
+                                }
             }
         }
     },

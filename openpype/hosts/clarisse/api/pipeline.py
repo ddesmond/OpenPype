@@ -108,7 +108,7 @@ class clarisse_project_fileLogHandler(logging.Handler):
 
 
 def _install_menu():
-    """Install Avalon menu into Clarisse main menu"""
+    """Install OpenPype menu into Clarisse main menu"""
 
     def add_command_callback(menu,
                              name,
@@ -121,8 +121,8 @@ def _install_menu():
                 "Menu>Command",
                 "import avalon.tools.creator as tool; tool.show()"
             )
-        Clarisse running python2.7 should use ScriptingPython2
-        Clarisse running python3.7 should use ScriptingPython3
+        Clarisse 5 running python2.7 should use ScriptingPython2
+        Clarisse 5 running python3.7 should use ScriptingPython3
         """
 
         # Store the callback
