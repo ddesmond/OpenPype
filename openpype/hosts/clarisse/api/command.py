@@ -29,8 +29,8 @@ def reset_frame_range():
 
     with command_batch("OpenPype: reset frame range"):
         image = "project://scene/image"
-        ix.cmds.SetValue(image + ".background.first_frame", frame_start)
-        ix.cmds.SetValue(image + ".background.last_frame", frame_end)
+        ix.cmds.SetValues([image + ".background.first_frame"], [frame_start])
+        ix.cmds.SetValues([image + ".background.last_frame"], [frame_end])
         ix.cmds.SetCurrentFrameRange(float(frame_start), float(frame_end))
         log.info("Frame range set")
 
