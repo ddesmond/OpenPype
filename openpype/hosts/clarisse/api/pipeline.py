@@ -23,8 +23,7 @@ from openpype.host import HostBase, ILoadHost, IWorkfileHost
 from openpype.hosts.clarisse import CLARISSE_ROOT_DIR
 
 
-HOST_DIR = os.path.dirname(CLARISSE_ROOT_DIR)
-PLUGINS_DIR = os.path.join(HOST_DIR, "plugins")
+PLUGINS_DIR = os.path.join(CLARISSE_ROOT_DIR, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
 LOAD_PATH = os.path.join(PLUGINS_DIR, "load")
 CREATE_PATH = os.path.join(PLUGINS_DIR, "create")
