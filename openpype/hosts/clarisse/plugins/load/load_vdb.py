@@ -7,12 +7,12 @@ from openpype.hosts.clarisse.api.lib import get_imports_context
 
 import ix
 
-class ReferenceLoader(load.LoaderPlugin):
-    """Reference content into Clarisse"""
+class VDBLoader(load.LoaderPlugin):
+    """Reference VDB content into Clarisse"""
 
-    label = "Reference File"
+    label = "Reference VDB File"
     families = ["*"]
-    representations = ["abc", "usd", "usda"]
+    representations = ["vdb"]
     order = 0
 
     icon = "code-fork"
@@ -30,7 +30,15 @@ class ReferenceLoader(load.LoaderPlugin):
         # Create the file reference
         imports_context = str(get_imports_context())
 
-        node = ix.cmds.CreateFileReference(imports_context, [filepath])
+        node = ix.cmds.CreateObject("VDB_LOAD", "GeometryVolumeFile", "Global", imports_context)
+        ix.cmds.SetValues(["build://project/IMPORTS/VDB_LOAD.filename[0]"], [str(filepath)])
+
+        # lets rename the project item
+        node_name = "{}_{}".format(namespace, name) if namespace else name
+        ix.cmds.RenameItem(imports_context+"/VDB_LOAD", node_name)
+
+        # set trigger to check if sequence
+        node.call_action("detect_sequence")
 
         # Imprint it with some data so ls() can find this
         # particular loaded content and can return it as a
@@ -50,7 +58,7 @@ class ReferenceLoader(load.LoaderPlugin):
         # Command fails on unicode so we must force it to be strings
         # todo: can we do a better conversion, e.g. f.decode("utf8")
         filepath = str(filepath)
-        ix.cmds.SetReferenceFilename([node], filepath)
+        ix.cmds.SetValues([str(node)+".filename[0]"], [str(filepath)])
 
         # todo: do we need to explicitly trigger reload?
         # Update the representation id

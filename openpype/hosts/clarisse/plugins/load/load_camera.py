@@ -8,11 +8,11 @@ from openpype.hosts.clarisse.api.lib import get_imports_context
 import ix
 
 class ReferenceLoader(load.LoaderPlugin):
-    """Reference content into Clarisse"""
+    """Reference Camera into Clarisse"""
 
-    label = "Reference File"
+    label = "Reference Camera File"
     families = ["*"]
-    representations = ["abc", "usd", "usda"]
+    representations = ["abc"]
     order = 0
 
     icon = "code-fork"
