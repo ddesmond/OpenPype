@@ -63,6 +63,10 @@
     },
     {
       "type": "schema",
+      "name": "schema_clarisse"
+    },
+    {
+      "type": "schema",
       "name": "schema_harmony"
     },
     {
