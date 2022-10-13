@@ -92,6 +92,7 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
                     # we need to parse it properly
                     ctx = ix.item_exists(str(context))
                     print("Container id/name/context", id, name, context)
+                    print("CTX", ctx)
                     parsed = parse_container(ctx)
                     yield parsed
                 except:

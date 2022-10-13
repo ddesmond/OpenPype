@@ -31,8 +31,19 @@ class CreateRenderOutput(LegacyCreator):
         filename = "$PDIR/pyblish/{}.exr".format(str(self.name))
         ix.log_info("SETUP PATH is {}".format(filename))
 
-        # TODO write render layer creation
-        pass
+        clarisse_image = ix.cmds.CreateObject("render_shot", "Image", "Global", "build://project/scene")
 
+        layer_shot = ix.cmds.AddLayer(str(clarisse_image) + ".layers", "Layer3d")
+        newnamed = ix.cmds.RenameItem(str(clarisse_image) + ".layer_3d", self.name)
+        render_layer =str(clarisse_image) + "." + str(newnamed)
 
+        print("CREATED DATA")
+        print(layer_shot)
+        print(newnamed)
+        print(clarisse_image)
+        print(render_layer)
 
+        for d in self.data.keys():
+            print(d, self.data[d])
+
+        # imprint_container(render_layer, self.data)
