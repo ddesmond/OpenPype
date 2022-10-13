@@ -11,6 +11,14 @@
           {
             "key": "CreateRenderOutput",
             "label": "Create Render Image"
+          },
+          {
+            "key": "CreateContextProjectOutput",
+            "label": "Create Project Export for Referencing"
+          },
+          {
+            "key": "CreateUSDOutput",
+            "label": "Create Context USD Export"
           }
         ]
       }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import openpype.api
 import pyblish.api
-import hou
+import ix
 
 
 class ValidateWorkfilePaths(pyblish.api.InstancePlugin):
@@ -15,7 +15,7 @@ class ValidateWorkfilePaths(pyblish.api.InstancePlugin):
     optional = True
 
     node_types = ["file", "alembic"]
-    prohibited_vars = ["$HIP", "$JOB"]
+    prohibited_vars = ["$PDIR", "$CDIR"]
 
     def process(self, instance):
         invalid = self.get_invalid()
@@ -42,4 +42,4 @@ class ValidateWorkfilePaths(pyblish.api.InstancePlugin):
         invalid = cls.get_invalid()
         for param in invalid:
             cls.log.info("processing: {}".format(param.path()))
-            cls.log.info("TODO")
+            cls.log.info("REPAIR TODO")

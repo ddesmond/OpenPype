@@ -28,8 +28,9 @@ class CreateRenderOutput(LegacyCreator):
             instance (pyImage): selected Image layer
 
         """
-
-        filename = "$PDIR/pyblish/%s.exr" % self.name
+        print("INSTANCE DATA", instance)
+        filename = "$PDIR/pyblish/{}.exr".format(str(self.name))
+        ix.log_info("SETUP PATH is {}".format(filename))
 
         # TODO write render layer creation
         pass

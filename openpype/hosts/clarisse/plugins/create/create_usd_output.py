@@ -1,7 +1,11 @@
 import ix
 
+from openpype.pipeline.create import (
+    LegacyCreator
+)
 
-class CreateUSDOutput():
+
+class CreateUSDOutput(LegacyCreator):
     """Bake a context into alembic
     no shading will be exported, just geometry"""
 

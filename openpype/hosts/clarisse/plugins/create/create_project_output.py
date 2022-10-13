@@ -1,11 +1,15 @@
 import ix
 
+from openpype.pipeline.create import (
+    LegacyCreator
+)
 
-class CreateContextProjectOutput():
+
+class CreateContextProjectOutput(LegacyCreator):
     """Bake a context into a project file"""
 
     label = "Clarisse project file"
-    family = "project"
+    family = "workfile"
     icon = "magic"
     defaults = ["Main"]
 
