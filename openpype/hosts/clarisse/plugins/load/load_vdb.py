@@ -35,7 +35,7 @@ class VDBLoader(load.LoaderPlugin):
 
         # Create the file reference
         node = ix.cmds.CreateObject("VDB_LOAD", "GeometryVolumeFile", "Global", imports_context)
-        ix.cmds.SetValues(["build://project/IMPORTS/VDB_LOAD.filename[0]"], [str(filepath)])
+        ix.cmds.SetValues(["build://project/IMPORTS/volumes/VDB_LOAD.filename[0]"], [str(filepath)])
 
         # lets rename the project item
         node_name = "{}_{}".format(namespace, name) if namespace else name

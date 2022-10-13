@@ -40,7 +40,7 @@ def create_import_contexts():
     ctx_import_types = ["geometry", "cameras", "volumes"]
     ctx_list = []
     for ctx in ctx_import_types:
-        if not check_ctx():
+        if not check_ctx(str(ctx)):
             ctx = ix.cmds.CreateContext(str(ctx), "Global", "build://project/IMPORTS/")
             ctx_list.append(str(ctx))
 
