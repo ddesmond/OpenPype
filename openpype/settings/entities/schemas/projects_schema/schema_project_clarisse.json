@@ -1,0 +1,17 @@
+{
+    "type": "dict",
+    "collapsible": true,
+    "key": "clarisse",
+    "label": "Clarisse",
+    "is_file": true,
+    "children": [
+        {
+            "type": "schema",
+            "name": "schema_clarisse_create"
+        },
+        {
+            "type": "schema",
+            "name": "schema_clarisse_publish"
+        }
+    ]
+}

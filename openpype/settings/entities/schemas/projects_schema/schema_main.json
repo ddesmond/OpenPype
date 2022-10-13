@@ -104,6 +104,10 @@
                 },
                 {
                     "type": "schema",
+                    "name": "schema_project_clarisse"
+                },
+                {
+                    "type": "schema",
                     "name": "schema_project_blender"
                 },
                 {
