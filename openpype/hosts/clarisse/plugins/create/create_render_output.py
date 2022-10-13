@@ -21,14 +21,13 @@ class CreateRenderOutput(LegacyCreator):
         # Set node type to create for output
         self.data.update({"node_type": "alembic"})
 
-    def _process(self, instance):
+    def process(self):
         """Creator main entry point.
 
         Args:
             instance (pyImage): selected Image layer
 
         """
-        print("INSTANCE DATA", instance)
         filename = "$PDIR/pyblish/{}.exr".format(str(self.name))
         ix.log_info("SETUP PATH is {}".format(filename))
 

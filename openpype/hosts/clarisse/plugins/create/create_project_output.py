@@ -17,7 +17,7 @@ class CreateContextProjectOutput(LegacyCreator):
         super(CreateContextProjectOutput, self).__init__(*args, **kwargs)
 
 
-    def _process(self, instance):
+    def process(self):
         """Creator main entry point.
 
         Args:

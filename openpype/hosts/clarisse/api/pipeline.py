@@ -29,6 +29,7 @@ LOAD_PATH = os.path.join(PLUGINS_DIR, "load")
 CREATE_PATH = os.path.join(PLUGINS_DIR, "create")
 INVENTORY_PATH = os.path.join(PLUGINS_DIR, "inventory")
 
+OPENPYPE_ATTR_PREFIX = "openpype_"
 
 self = sys.modules[__name__]
 self._menu = "OpenPype>"
@@ -83,8 +84,8 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
             # print(context)
             if context.is_reference() and not context.is_disabled():
                 try:
-                    id = context.get_attribute("id").get_string()
-                    name = context.get_attribute("name").get_string()
+                    id = context.get_attribute("openpype_id").get_string()
+                    name = context.get_attribute("openpype_name").get_string()
                     # ix.log_info("{}: {}".format(context.get_name(), name))
                     # yielding only referenced files ""
                     # we need to provide dict to the container consumer so
@@ -232,6 +233,9 @@ def imprint_container(node, name, namespace, context, loader):
         ("representation", context["representation"]["_id"])
     ]
 
+    # Prefix the attributes
+    data = [((OPENPYPE_ATTR_PREFIX + key), value) for key, value in data]
+
     # We use an OrderedDict to make sure the attributes
     # are always created in the same order. This is solely
     # to make debugging easier when reading the values in
@@ -248,10 +252,15 @@ def parse_container(node):
     # If not all required data return None
     required = ['id', 'schema', 'name',
                 'namespace', 'loader', 'representation']
-    if not all(node.attribute_exists(attr) for attr in required):
-        return
 
-    data = {attr: node.get_attribute(attr)[0] for attr in required}
+    data = {}
+    for key in required:
+        attr = OPENPYPE_ATTR_PREFIX + key
+        if not node.attribute_exists(attr):
+            return
+
+        value = node.get_attribute(attr)[0]
+        data[key] = value
 
     # Store the node's name
     data["objectName"] = node.get_full_name()

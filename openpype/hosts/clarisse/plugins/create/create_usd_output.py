@@ -23,7 +23,7 @@ class CreateUSDOutput(LegacyCreator):
         # Set node type to create for output
         self.data.update({"node_type": "usd"})
 
-    def _process(self, instance):
+    def process(self, instance):
         """Creator main entry point.
 
         Args:
