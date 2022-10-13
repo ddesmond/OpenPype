@@ -3,9 +3,11 @@ from openpype.pipeline import (
     get_representation_path
 )
 from openpype.hosts.clarisse.api.pipeline import imprint_container
-from openpype.hosts.clarisse.api.lib import get_imports_context
+from openpype.hosts.clarisse.api.lib import get_imports_context, create_import_contexts
 
 import ix
+
+
 
 class VDBLoader(load.LoaderPlugin):
     """Reference VDB content into Clarisse"""
@@ -27,15 +29,18 @@ class VDBLoader(load.LoaderPlugin):
         # todo: can we do a better conversion, e.g. f.decode("utf8")
         filepath = str(filepath)
 
-        # Create the file reference
-        imports_context = str(get_imports_context())
+        # take care of import contexts
+        imports_context = str(get_imports_context()) + "/volumes"
+        create_sub_contexts = create_import_contexts()
 
+        # Create the file reference
         node = ix.cmds.CreateObject("VDB_LOAD", "GeometryVolumeFile", "Global", imports_context)
         ix.cmds.SetValues(["build://project/IMPORTS/VDB_LOAD.filename[0]"], [str(filepath)])
 
         # lets rename the project item
         node_name = "{}_{}".format(namespace, name) if namespace else name
-        ix.cmds.RenameItem(imports_context+"/VDB_LOAD", node_name)
+        namespace = namespace if namespace else context["asset"]["name"]
+        ix.cmds.RenameItem(imports_context + "/VDB_LOAD", str(namespace + "_" + node_name))
 
         # set trigger to check if sequence
         node.call_action("detect_sequence")
@@ -62,8 +67,8 @@ class VDBLoader(load.LoaderPlugin):
 
         # todo: do we need to explicitly trigger reload?
         # Update the representation id
-        ix.cmds.SetValue("{}.representation[0]".format(node),
-                         str(representation["_id"]))
+        ix.cmds.SetValues([str("{}.representation[0]".format(node))],
+                          [str(representation["_id"])])
 
     def remove(self, container):
         node = container["node"]

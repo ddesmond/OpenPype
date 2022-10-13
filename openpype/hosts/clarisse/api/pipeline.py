@@ -87,6 +87,8 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
                     name = context.get_attribute("name").get_string()
                     # ix.log_info("{}: {}".format(context.get_name(), name))
                     # yielding only referenced files ""
+                    # we need to provide dict to the container consumer so
+                    # we need to parse it properly
                     ctx = ix.item_exists(str(context))
                     print("Container id/name/context", id, name, context)
                     parsed = parse_container(ctx)

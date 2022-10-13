@@ -1,7 +1,10 @@
 import ix
 
+from openpype.pipeline.create import (
+    LegacyCreator
+)
 
-class CreateRenderOutput():
+class CreateRenderOutput(LegacyCreator):
     """Creates an image with a layer set ready for render"""
 
     label = "Render Layer"

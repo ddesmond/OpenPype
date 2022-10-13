@@ -3,7 +3,7 @@ from openpype.pipeline import (
     get_representation_path
 )
 from openpype.hosts.clarisse.api.pipeline import imprint_container
-from openpype.hosts.clarisse.api.lib import get_imports_context
+from openpype.hosts.clarisse.api.lib import get_imports_context, create_import_contexts
 
 import ix
 
@@ -28,7 +28,8 @@ class ReferenceLoader(load.LoaderPlugin):
         filepath = str(filepath)
 
         # Create the file reference
-        imports_context = str(get_imports_context())
+        imports_context = str(get_imports_context()) + "/geometry"
+        create_sub_contexts = create_import_contexts()
 
         node = ix.cmds.CreateFileReference(imports_context, [filepath])
 
@@ -54,8 +55,8 @@ class ReferenceLoader(load.LoaderPlugin):
 
         # todo: do we need to explicitly trigger reload?
         # Update the representation id
-        ix.cmds.SetValue("{}.representation[0]".format(node),
-                         str(representation["_id"]))
+        ix.cmds.SetValues([str("{}.representation[0]".format(node))],
+                          [str(representation["_id"])])
 
     def remove(self, container):
         node = container["node"]

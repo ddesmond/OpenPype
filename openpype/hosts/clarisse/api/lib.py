@@ -30,6 +30,22 @@ def get_imports_context():
         return ix.cmds.CreateContext("IMPORTS", "Global", "build://project/")
 
 
+def check_ctx(ctx):
+    # check for context creation
+    if ix.item_exists(str("build://project/IMPORTS/"+str(ctx))):
+        return True
+
+def create_import_contexts():
+    """Create ctxs in IMPORT for asset types"""
+    ctx_import_types = ["geometry", "cameras", "volumes"]
+    ctx_list = []
+    for ctx in ctx_import_types:
+        if not check_ctx():
+            ctx = ix.cmds.CreateContext(str(ctx), "Global", "build://project/IMPORTS/")
+            ctx_list.append(str(ctx))
+
+    return ctx_list
+
 def get_raw_item_filename(itemobject):
     """Returns a raw string for the object
     takes clarisse object or gets one"""
