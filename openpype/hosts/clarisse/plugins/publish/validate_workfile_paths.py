@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import openpype.api
 import pyblish.api
 import ix
@@ -11,35 +10,14 @@ class ValidateWorkfilePaths(pyblish.api.InstancePlugin):
     families = ["workfile"]
     hosts = ["clarisse"]
     label = "Validate Workfile Paths"
-    actions = [openpype.api.RepairAction]
     optional = True
-
     node_types = ["file", "alembic"]
-    prohibited_vars = ["$PDIR", "$CDIR"]
+    prohibited_vars = ["$PDIR"]
 
     def process(self, instance):
-        invalid = self.get_invalid()
-        self.log.info(
-            "node types to check: {}".format(", ".join(self.node_types)))
-        self.log.info(
-            "prohibited vars: {}".format(", ".join(self.prohibited_vars))
-        )
-        if invalid:
-            for param in invalid:
-                self.log.error(
-                    "{}: {}".format(param.path(), param.unexpandedString()))
+        # collect all filenames in the project
 
-            raise RuntimeError("Invalid paths found")
+        # check for PDIRS
 
-    @classmethod
-    def get_invalid(cls):
-        invalid = []
-
-        return invalid
-
-    @classmethod
-    def repair(cls, instance):
-        invalid = cls.get_invalid()
-        for param in invalid:
-            cls.log.info("processing: {}".format(param.path()))
-            cls.log.info("REPAIR TODO")
+        # resolve pdirs to full paths
+        pass

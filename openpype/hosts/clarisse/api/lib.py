@@ -31,9 +31,76 @@ def get_imports_context():
 
 
 def check_ctx(ctx):
+    """Check if context exists"""
     # check for context creation
     if ix.item_exists(str("build://project/IMPORTS/"+str(ctx))):
         return True
+
+def gather_all_filenames_projectitems():
+    """Gathers all objects/ project item class to a list
+    gets all items - enabled and disabled"""
+
+    all_files = []
+    class_names = ix.api.CoreStringArray(1)
+    class_names[0] = "ProjectItem"
+
+    empty_mask = ix.api.CoreBitFieldHelper()
+
+    all_objects = ix.api.OfObjectArray()
+    root_context = ix.application.get_factory().get_root()
+    root_context.get_all_objects(class_names, all_objects, empty_mask)
+
+    for f in all_objects:
+        # check for allowed, or parent context is a reference and if is read only
+        if not ix.get_item(str(f.get_parent_item())).is_reference():
+            try:
+                if f.attrs.filename:
+                    check_file = f.get_attribute("filename")
+                    if f.attrs.filename != "":
+                        all_files.append(f)
+            except:
+                pass
+
+    return all_files
+
+
+def gather_all_images(filter=True):
+    """Gathers all objects/ project item class to a list
+    gets all items - enabled and disabled
+    filter can be Enabled or disabled, True or false
+    """
+
+    all_files = []
+    class_names = ix.api.CoreStringArray(1)
+    class_names[0] = "Image"
+
+    empty_mask = ix.api.CoreBitFieldHelper()
+
+    all_objects = ix.api.OfObjectArray()
+    root_context = ix.application.get_factory().get_root()
+    root_context.get_all_objects(class_names, all_objects, empty_mask)
+
+    for f in all_objects:
+        if filter and f.is_disabled():
+            pass
+        else:
+            all_files.append(f)
+
+    return all_files
+
+
+def gather_all_layers_from_image(image=None):
+    """Gathers all layer3d in the image
+    """
+    included_layers = []
+    sourced_image = ix.get_item(str(image)).get_module()
+
+    for a in range(sourced_image.get_all_layers().get_count()):
+        layer = ix.get_item(str(image)).get_module().get_layers()[a].get_object()
+        included_layers.append(layer)
+
+    return included_layers
+
 
 def create_import_contexts():
     """Create ctxs in IMPORT for asset types"""
@@ -45,6 +112,7 @@ def create_import_contexts():
             ctx_list.append(str(ctx))
 
     return ctx_list
+
 
 def get_raw_item_filename(itemobject):
     """Returns a raw string for the object

@@ -1,5 +1,6 @@
 import ix
 
+from openpype.hosts.clarisse.api.pipeline import imprint
 from openpype.pipeline.create import (
     LegacyCreator
 )
@@ -9,6 +10,7 @@ class CreateRenderOutput(LegacyCreator):
 
     label = "Render Layer"
     family = "render"
+    identifier = "render_layer"
     icon = "sign-out"
     defaults = ["Main"]
 
@@ -19,7 +21,7 @@ class CreateRenderOutput(LegacyCreator):
         self.data.pop("active", None)
 
         # Set node type to create for output
-        self.data.update({"node_type": "alembic"})
+        self.data.update({"node_type": "render_layer"})
 
     def process(self):
         """Creator main entry point.
@@ -36,6 +38,7 @@ class CreateRenderOutput(LegacyCreator):
         layer_shot = ix.cmds.AddLayer(str(clarisse_image) + ".layers", "Layer3d")
         newnamed = ix.cmds.RenameItem(str(clarisse_image) + ".layer_3d", self.name)
         render_layer =str(clarisse_image) + "." + str(newnamed)
+        rlayer = ix.get_item(render_layer)
 
         print("CREATED DATA")
         print(layer_shot)
@@ -46,4 +49,4 @@ class CreateRenderOutput(LegacyCreator):
         for d in self.data.keys():
             print(d, self.data[d])
 
-        # imprint_container(render_layer, self.data)
+        imprint(rlayer, self.data, group="openpype")
