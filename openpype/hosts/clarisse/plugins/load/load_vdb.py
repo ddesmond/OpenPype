@@ -67,7 +67,7 @@ class VDBLoader(load.LoaderPlugin):
 
         # todo: do we need to explicitly trigger reload?
         # Update the representation id
-        ix.cmds.SetValues([str("{}.representation[0]".format(node))],
+        ix.cmds.SetValues([str("{}.openpype_representation[0]".format(node))],
                           [str(representation["_id"])])
 
     def remove(self, container):

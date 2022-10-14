@@ -77,7 +77,6 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         return [".project"]
 
     def get_containers(self):
-
         contexts = ix.api.OfContextSet()
         ix.application.get_factory().get_root().resolve_all_contexts(contexts)
         for context in contexts:
@@ -198,16 +197,18 @@ def imprint(node, data, group="openpype"):
 
     """
     for attr, value in data.items():
+        # prefix the attribute
+        pype_attr = OPENPYPE_ATTR_PREFIX + attr
 
         # Create the attribute
-        node.add_attribute(attr,
+        node.add_attribute(pype_attr,
                            ix.api.OfAttr.TYPE_STRING,
                            ix.api.OfAttr.CONTAINER_SINGLE,
                            ix.api.OfAttr.VISUAL_HINT_DEFAULT,
                            group)
 
         # Set the attribute's value
-        node.get_attribute(attr)[0] = str(value)
+        node.get_attribute(pype_attr)[0] = str(value)
 
 
 def imprint_container(node, name, namespace, context, loader):
@@ -233,9 +234,6 @@ def imprint_container(node, name, namespace, context, loader):
         ("loader", loader),
         ("representation", context["representation"]["_id"])
     ]
-
-    # Prefix the attributes
-    data = [((OPENPYPE_ATTR_PREFIX + key), value) for key, value in data]
 
     # We use an OrderedDict to make sure the attributes
     # are always created in the same order. This is solely
