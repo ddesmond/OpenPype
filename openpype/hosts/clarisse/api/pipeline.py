@@ -77,6 +77,10 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         return [".project"]
 
     def get_containers(self):
+        """Get containers.
+        Currently just references are beeing accounted for.
+        TODO: Extend to cover VDB, images/layers and usds
+        """
         contexts = ix.api.OfContextSet()
         ix.application.get_factory().get_root().resolve_all_contexts(contexts)
         for context in contexts:
@@ -96,6 +100,57 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
                     yield parsed
                 except:
                     pass
+
+    def gather_containers():
+        """gathers all objects/ project item class to a list
+        Only projectitems with openpype_id are taken into accound.
+        No filtering, both enabled and disabled objects are accounted for.
+        returns: list
+
+        could be cleaner thou... next time...
+        """
+        all_files = []
+        class_names = ix.api.CoreStringArray(1)
+        class_names[0] = "ProjectItem"
+        empty_mask = ix.api.CoreBitFieldHelper()
+        all_objects = ix.api.OfObjectArray()
+        root_context = ix.application.get_factory().get_root()
+        root_context.get_all_objects(class_names, all_objects, empty_mask)
+        for f in range(all_objects.get_count()):
+            item = ix.item_exists(str(all_objects[f]))
+            try:
+                # we check for any item with filename but we want to
+                # avoid children of a reference context
+                if item.attrs.filename:
+                    #check for references
+                    if ix.get_item(str(item.get_parent_item())).is_reference():
+                        # check parent if openpype attribute
+                        if item.get_parent_item().attribute_exists("openpype_id"):
+                            refed_item = item.get_parent_item()
+                    else:
+                        # check for any other item with file in it
+                        # can be a texture map or vdb item or obj
+                        if item.attribute_exists("openpype_id"):
+                            refed_item = item
+
+                    all_files.append(refed_item)
+            except:
+                pass
+
+            # we need to include also all possible image layers where
+            # openpype attribute is found
+            if item.get_class_name() == "Image":
+                sourced_image = item.get_module()
+                for a in range(sourced_image.get_all_layers().get_count()):
+                    layer = sourced_image.get_layers()[a].get_object()
+                    try:
+                        if layer.attribute_exists("openpype_id"):
+                            all_files.append(layer)
+                    except:
+                        pass
+
+        return all_files
+
 
     @contextlib.contextmanager
     def maintained_selection(self):
