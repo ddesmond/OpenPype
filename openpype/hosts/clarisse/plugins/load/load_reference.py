@@ -31,6 +31,12 @@ class ReferenceLoader(load.LoaderPlugin):
         imports_context = str(get_imports_context()) + "/geometry"
         create_sub_contexts = create_import_contexts()
 
+        node_name = "{}_{}".format(namespace, name) if namespace else name
+        namespace = namespace if namespace else context["asset"]["name"]
+        node = ix.cmds.CreateFileReference(imports_context, [filepath])
+        ix.cmds.RenameItem(str(node),
+                           namespace)
+
         node = ix.cmds.CreateFileReference(imports_context, [filepath])
 
         # Imprint it with some data so ls() can find this

@@ -31,7 +31,11 @@ class ReferenceLoader(load.LoaderPlugin):
         imports_context = str(get_imports_context()) + "/cameras"
         create_sub_contexts = create_import_contexts()
 
+        node_name = "{}_{}".format(namespace, name) if namespace else name
+        namespace = namespace if namespace else context["asset"]["name"]
         node = ix.cmds.CreateFileReference(imports_context, [filepath])
+        ix.cmds.RenameItem(str(node),
+                           namespace)
 
         # Imprint it with some data so ls() can find this
         # particular loaded content and can return it as a
@@ -57,8 +61,8 @@ class ReferenceLoader(load.LoaderPlugin):
 
         # todo: do we need to explicitly trigger reload?
         # Update the representation id
-        ix.cmds.SetValue("{}.openpype_representation[0]".format(node),
-                         str(representation["_id"]))
+        ix.cmds.SetValues([str("{}.openpype_representation[0]".format(node))],
+                          [str(representation["_id"])])
         ix.application.check_for_events()
 
     def remove(self, container):

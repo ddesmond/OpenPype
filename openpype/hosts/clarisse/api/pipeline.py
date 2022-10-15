@@ -136,7 +136,6 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         all_items = self.gather_containers()
         for projectitem in all_items:
             ctx = ix.item_exists(str(projectitem))
-            ix.log_info("Loading item", ctx)
             parsed = parse_container(ctx)
             yield parsed
 
