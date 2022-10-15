@@ -76,32 +76,7 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
     def get_workfile_extensions(self):
         return [".project"]
 
-    def get_containers(self):
-        """Get containers.
-        Currently just references are beeing accounted for.
-        TODO: Extend to cover VDB, images/layers and usds
-        """
-        contexts = ix.api.OfContextSet()
-        ix.application.get_factory().get_root().resolve_all_contexts(contexts)
-        for context in contexts:
-            # print(context)
-            if context.is_reference() and not context.is_disabled():
-                try:
-                    id = context.get_attribute("openpype_id").get_string()
-                    name = context.get_attribute("openpype_name").get_string()
-                    # ix.log_info("{}: {}".format(context.get_name(), name))
-                    # yielding only referenced files ""
-                    # we need to provide dict to the container consumer so
-                    # we need to parse it properly
-                    ctx = ix.item_exists(str(context))
-                    print("Container id/name/context", id, name, context)
-                    print("CTX", ctx)
-                    parsed = parse_container(ctx)
-                    yield parsed
-                except:
-                    pass
-
-    def gather_containers():
+    def gather_containers(self):
         """gathers all objects/ project item class to a list
         Only projectitems with openpype_id are taken into accound.
         No filtering, both enabled and disabled objects are accounted for.
@@ -150,6 +125,21 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
                         pass
 
         return all_files
+
+
+    def get_containers(self):
+        """Get containers.
+        Currently just references are beeing accounted for.
+        """
+        all_items = self.gather_containers()
+        for projectitem in all_items:
+            ctx = ix.item_exists(str(projectitem))
+            id = ctx.get_attribute("openpype_id").get_string()
+            name = ctx.get_attribute("openpype_name").get_string()
+            print("Container id/name/context", id, name, ctx)
+            print("CTX", ctx)
+            parsed = parse_container(ctx)
+            yield parsed
 
 
     @contextlib.contextmanager
