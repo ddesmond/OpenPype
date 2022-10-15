@@ -71,7 +71,8 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         return get_current_clarisseproject()
 
     def workfile_has_unsaved_changes(self):
-        return ix.check_need_save()
+        if not "untitled" in self.get_current_workfile():
+            return ix.check_need_save()
 
     def get_workfile_extensions(self):
         return [".project"]
