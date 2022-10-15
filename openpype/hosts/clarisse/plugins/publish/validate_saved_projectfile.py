@@ -6,7 +6,7 @@ class ValidateClarisseProjectSave(pyblish.api.ContextPlugin):
     """Ensure current project is saved"""
 
     order = pyblish.api.ValidatorOrder
-    label = "Validate Comp Saved"
+    label = "Validate Project is Saved"
     families = ["*"]
     hosts = ["clarisse"]
 

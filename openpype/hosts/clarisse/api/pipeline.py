@@ -319,6 +319,11 @@ def get_current_clarisseproject():
     # current_filepath = ix.application.get_current_project_filename()
     return current_filepath
 
+def get_current_clarisseproject_fullpath():
+    """Get project file full path"""
+    current_filepath = ix.application.get_current_project_filename()
+    return current_filepath
+
 
 @contextlib.contextmanager
 def clarisse_project_file_lock_and_undo_chunk(clarisse_project_file, undo_queue_name="Script CMD"):

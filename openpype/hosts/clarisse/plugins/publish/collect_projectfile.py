@@ -1,7 +1,7 @@
 import os
 import pyblish.api
 
-from openpype.hosts.clarisse.api.pipeline import get_current_clarisseproject
+from openpype.hosts.clarisse.api.pipeline import get_current_clarisseproject_fullpath
 
 
 class CollectCurrentProjectFile(pyblish.api.ContextPlugin):
@@ -14,7 +14,7 @@ class CollectCurrentProjectFile(pyblish.api.ContextPlugin):
     def process(self, context):
         """Collect project file"""
 
-        current_project_file = get_current_clarisseproject()
+        current_project_file = get_current_clarisseproject_fullpath()
         assert current_project_file
 
         context.data['currentFile'] = current_project_file
