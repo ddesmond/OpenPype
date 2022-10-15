@@ -33,9 +33,10 @@ class ReferenceLoader(load.LoaderPlugin):
 
         node_name = "{}_{}".format(namespace, name) if namespace else name
         namespace = namespace if namespace else context["asset"]["name"]
+        camera_name = "shotcam_" + namespace
         node = ix.cmds.CreateFileReference(imports_context, [filepath])
         ix.cmds.RenameItem(str(node),
-                           namespace)
+                           camera_name)
 
         # Imprint it with some data so ls() can find this
         # particular loaded content and can return it as a

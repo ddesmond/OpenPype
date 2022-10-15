@@ -37,8 +37,6 @@ class ReferenceLoader(load.LoaderPlugin):
         ix.cmds.RenameItem(str(node),
                            namespace)
 
-        node = ix.cmds.CreateFileReference(imports_context, [filepath])
-
         # Imprint it with some data so ls() can find this
         # particular loaded content and can return it as a
         # valid container
