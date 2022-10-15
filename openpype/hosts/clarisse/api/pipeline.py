@@ -76,12 +76,13 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
     def get_workfile_extensions(self):
         return [".project"]
 
-    def gather_containers(self):
+    def gather_containers(self, load_layers=False):
         """gathers all objects/ project item class to a list
         Only projectitems with openpype_id are taken into accound.
         No filtering, both enabled and disabled objects are accounted for.
         returns: list
 
+        load _layers will load images layers3d too.
         could be cleaner thou... next time...
         """
         all_files = []
@@ -112,17 +113,18 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
             except:
                 pass
 
-            # we need to include also all possible image layers where
-            # openpype attribute is found
-            if item.get_class_name() == "Image":
-                sourced_image = item.get_module()
-                for a in range(sourced_image.get_all_layers().get_count()):
-                    layer = sourced_image.get_layers()[a].get_object()
-                    try:
-                        if layer.attribute_exists("openpype_id"):
-                            all_files.append(layer)
-                    except:
-                        pass
+            if load_layers:
+                # we need to include also all possible image layers where
+                # openpype attribute is found
+                if item.get_class_name() == "Image":
+                    sourced_image = item.get_module()
+                    for a in range(sourced_image.get_all_layers().get_count()):
+                        layer = sourced_image.get_layers()[a].get_object()
+                        try:
+                            if layer.attribute_exists("openpype_id"):
+                                all_files.append(layer)
+                        except:
+                            pass
 
         return all_files
 
@@ -134,10 +136,7 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         all_items = self.gather_containers()
         for projectitem in all_items:
             ctx = ix.item_exists(str(projectitem))
-            id = ctx.get_attribute("openpype_id").get_string()
-            name = ctx.get_attribute("openpype_name").get_string()
-            print("Container id/name/context", id, name, ctx)
-            print("CTX", ctx)
+            ix.log_info("Loading item", ctx)
             parsed = parse_container(ctx)
             yield parsed
 

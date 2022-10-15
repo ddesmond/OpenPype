@@ -55,6 +55,8 @@ class VDBLoader(load.LoaderPlugin):
             context=context,
             loader=self.__class__.__name__
         )
+        ix.application.check_for_events()
+
 
     def update(self, container, representation):
         node = container["node"]
@@ -69,7 +71,9 @@ class VDBLoader(load.LoaderPlugin):
         # Update the representation id
         ix.cmds.SetValues([str("{}.openpype_representation[0]".format(node))],
                           [str(representation["_id"])])
+        ix.application.check_for_events()
 
     def remove(self, container):
         node = container["node"]
         ix.cmds.DeleteItems([node.get_full_name()])
+        ix.application.check_for_events()
