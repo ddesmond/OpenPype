@@ -141,3 +141,4 @@ def make_all_contexts_local():
         ix.cmds.MakeLocalContext(ctx)
 
     ix.application.check_for_events()
+

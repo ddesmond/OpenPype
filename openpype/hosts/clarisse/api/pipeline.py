@@ -8,6 +8,9 @@ from collections import OrderedDict
 from pyblish import api as pyblish
 
 import ix
+
+from openpype.lib import register_event_callback
+from openpype.settings import get_anatomy_settings
 from . import lib
 import pyblish.api
 
@@ -36,6 +39,9 @@ self._menu = "OpenPype>"
 self._menu_callbacks = {}    # store custom menu callbacks, see _install_menu
 
 
+
+
+
 class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
     name = "clarisse"
 
@@ -50,6 +56,9 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         register_loader_plugin_path(LOAD_PATH)
         register_creator_plugin_path(CREATE_PATH)
         register_inventory_action_path(INVENTORY_PATH)
+        # Register Avalon event for workfiles loading.
+        # register_event_callback("open_workfile", check_inventory_versions)
+        # register_event_callback("taskChanged", change_context_label)
 
         _install_menu()
 
@@ -71,8 +80,7 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         return get_current_clarisseproject()
 
     def workfile_has_unsaved_changes(self):
-        if not "untitled" in self.get_current_workfile():
-            return ix.check_need_save()
+        return ix.check_need_save()
 
     def get_workfile_extensions(self):
         return [".project"]
@@ -334,3 +342,96 @@ def clarisse_project_file_lock_and_undo_chunk(clarisse_project_file, undo_queue_
         yield
     finally:
         ix.end_command_batch()
+
+
+def check_inventory_versions():
+    """
+    Actual version idetifier of Loaded containers
+
+    Any time this function is run it will check all nodes and filter only
+    Loader nodes for its version. It will get all versions from database
+    and check if the node is having actual version. If not then it will color
+    it to red.
+    """
+    from .pipeline import parse_container
+
+    # get all Loader nodes by avalon attribute metadata
+    node_with_repre_id = []
+    repre_ids = set()
+    # Find all containers and collect it's node and representation ids
+    for node in nuke.allNodes():
+        container = parse_container(node)
+
+        if container:
+            node = nuke.toNode(container["objectName"])
+            avalon_knob_data = read_avalon_data(node)
+            repre_id = avalon_knob_data["representation"]
+
+            repre_ids.add(repre_id)
+            node_with_repre_id.append((node, repre_id))
+
+    # Skip if nothing was found
+    if not repre_ids:
+        return
+
+    project_name = legacy_io.active_project()
+    # Find representations based on found containers
+    repre_docs = get_representations(
+        project_name,
+        representation_ids=repre_ids,
+        fields=["_id", "parent"]
+    )
+    # Store representations by id and collect version ids
+    repre_docs_by_id = {}
+    version_ids = set()
+    for repre_doc in repre_docs:
+        # Use stringed representation id to match value in containers
+        repre_id = str(repre_doc["_id"])
+        repre_docs_by_id[repre_id] = repre_doc
+        version_ids.add(repre_doc["parent"])
+
+    version_docs = get_versions(
+        project_name, version_ids, fields=["_id", "name", "parent"]
+    )
+    # Store versions by id and collect subset ids
+    version_docs_by_id = {}
+    subset_ids = set()
+    for version_doc in version_docs:
+        version_docs_by_id[version_doc["_id"]] = version_doc
+        subset_ids.add(version_doc["parent"])
+
+    # Query last versions based on subset ids
+    last_versions_by_subset_id = get_last_versions(
+        project_name, subset_ids=subset_ids, fields=["_id", "parent"]
+    )
+
+    # Loop through collected container nodes and their representation ids
+    for item in node_with_repre_id:
+        # Some python versions of nuke can't unfold tuple in for loop
+        node, repre_id = item
+        repre_doc = repre_docs_by_id.get(repre_id)
+        # Failsafe for not finding the representation.
+        if not repre_doc:
+            log.warning((
+                "Could not find the representation on node \"{}\""
+            ).format(node.name()))
+            continue
+
+        version_id = repre_doc["parent"]
+        version_doc = version_docs_by_id.get(version_id)
+        if not version_doc:
+            log.warning((
+                "Could not find the version on node \"{}\""
+            ).format(node.name()))
+            continue
+
+        # Get last version based on subset id
+        subset_id = version_doc["parent"]
+        last_version = last_versions_by_subset_id[subset_id]
+        # Check if last version is same as current version
+        if last_version["_id"] == version_doc["_id"]:
+            color_value = "0x4ecd25ff"
+        else:
+            color_value = "0xd84f20ff"
+        node["tile_color"].setValue(int(color_value, 16))
+

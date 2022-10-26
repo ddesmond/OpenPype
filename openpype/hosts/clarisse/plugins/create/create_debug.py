@@ -9,8 +9,8 @@ from openpype.pipeline.create import (
 class CreateDebugLogs(LegacyCreator):
     """Creates a quick debuger for avalon asset"""
 
-    label = "Render Layer"
-    family = "render"
+    label = "Debug info"
+    family = "*"
     identifier = "render_layer"
     icon = "sign-out"
     defaults = ["Main"]
@@ -26,7 +26,7 @@ class CreateDebugLogs(LegacyCreator):
         print("PROCESS DATA")
         print("self.data", self.data)
         for d in self.data:
-            print(d)
+            print(d, self.data[d])
 
     def process(self):
         """Creator main entry point.
@@ -44,7 +44,7 @@ class CreateDebugLogs(LegacyCreator):
         print("Asset_data")
         print(type(asset_data))
         for d in asset_data:
-            print(d)
+            print(d, asset_data[d])
 
         print("-----done ")
 
