@@ -55,7 +55,13 @@ def get_overrides(launch_env=None, hostapp="clarisse"):
 
 class PreConfigSetups(PreLaunchHook):
     """Clarisse OCIO and Config setup overrides
+
+    From Clarisse docs:
+    When enabling Use Ocio Config File while Ocio Config File field is empty,
+    the application will automatically try to resolve the global variable $OCIO to look up for a configuration file.
+    When Ocio Config File isn't empty the application ignores $OCIO even if it has been defined.
     """
+
     app_groups = ["clarisse"]
 
     def set_ocio(self, data):
@@ -104,11 +110,12 @@ class PreConfigSetups(PreLaunchHook):
         self.launch_context.launch_args += ["-config_file"]
         self.launch_context.launch_args += ["{}".format(SET_CONFIG_FILE_PATH)]
         print("MODED LAUNCH ARGUMENTS ADDED", self.launch_context.launch_args)
-        os.environ["CLARISSE_LOADED_CONFIG"] = SET_CONFIG_FILE_PATH
+        self.launch_context.env["CLARISSE_LOADED_CONFIG"] = SET_CONFIG_FILE_PATH
         self.launch_context.clear_launch_args(self.launch_context.launch_args)
 
     def unset_global_config(self):
         os.environ["CLARISSE_LOADED_CONFIG"] = ""
+        self.launch_context.env["CLARISSE_LOADED_CONFIG"] = ""
         print("No overrides. Cleaning last task GLOBAL CONFIG overrides.")
 
 
@@ -168,13 +175,8 @@ class PreConfigSetups(PreLaunchHook):
         #  now we setup all we need again
         overrides = get_overrides(launch_env=self.launch_context)
 
+        print("Running setup.")
         for override in overrides.keys():
             # print("Working on {} -- {}".format(override, overrides[override]))
             self.set_config_type(override, overrides[override])
-
-
-
-
-
-
 

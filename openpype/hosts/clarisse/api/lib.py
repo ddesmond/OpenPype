@@ -142,3 +142,12 @@ def make_all_contexts_local():
 
     ix.application.check_for_events()
 
+
+
+def popsup(info_text=None):
+    app = ix.application
+    clarisse_window = app.get_event_window()
+    box = ix.api.GuiMessageBox(app, 0, 0, "Pipeline Information",  info_text)
+    box.set_resizable(True)
+    box.resize(350,350,400,200)
+    box.show()

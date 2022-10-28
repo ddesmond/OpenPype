@@ -1,35 +1,34 @@
-from openpype.pipeline.context_tools import get_current_project_asset
+import os
+import json
 
 
 
-config_definition_mode_app = {
-    "Input_Output": [
-        {"openEXR_compression_method": "DWAB Compression"},
-        {"stream_texture_cache":  10240}
-                    ],
-    "color_management": [
-        {"use_ocio_config_file":  False},
-        {"ocio_config_file":  ""},
-        {"scene_color_space":  "Use scene_linear"},
-        {"default_view_transform":  "Clarisse.sRGB"},
-        {"color_picker_color_space":  "Use Default"}
-                        ],
-    "image_history": [
-        {"image_history_cache_max_count":  40},
-        {"image_history_cache_path":  ""},
-        {"image_history_autosave":  False},
-        {"image_history_cache_max_size":  8096}
-                    ],
-    "animation": [
-        {"frames_per_second":  "25"},
-        {"start_frame": 1001.0},
-        {"end_frame": 1100.0}
-                ]
-}
+def get_local_clarisse_cfg(version="5.0"):
+    """"Gets clarisse platform specific path to the local cfg file for the current running clarisse version
+    """
+    import platform
+    # this should be got from the anatomy apps for the correct version to query
+    #  we here assume that its the latest clarisse verions 5.0
+
+    # version = ix.application.get_version()[0:3]
+
+    host_os = platform.system().lower()
+    if host_os == "windows":
+        file = os.path.expanduser("~") + "/AppData/Roaming/Isotropix/Clarisse/" + str(version) + "/clarisse.cfg"
+    elif host_os == "macos":
+        file = os.path.expanduser("~") + "/Library/Preferences/Isotropix/Clarisse/" + str(version) + "/clarisse.cfg"
+    else:
+        # linux
+        file = os.path.expanduser("~") + "/.isotropix/clarisse/" + str(version) + "/clarisse.cfg"
+
+    if os.path.isfile(file):
+        return file
+    else:
+        print("NO CLARISSE CONFIGURATION FILE FOUND. PLEASE CHECK IN WITH PIPELINE.")
 
 
-def set_config_type_values(configtype, category, key, value, mode):
-    """Setsconfig attribute item type class
+def set_config_type_values(configtype, category, key, value, mode, modetype):
+    """Sets config attribute item type class, factory
     """
     import ix
     modes = {
@@ -50,25 +49,102 @@ def set_config_type_values(configtype, category, key, value, mode):
     }
 
     if configtype in modes[mode]:
-        return mode[configtype]("{}".format(category), "{}".format(key), "{}".format(value))
+        return modes[configtype][modetype]("{}".format(category), "{}".format(key), "{}".format(value))
+
+
 
 def load_user_config(json_path=None):
     """Loads user config from a path"""
-    pass
+    with open(json_path, 'r') as filename:
+        user_data = json.loads(filename)
 
-def save_user_config(json_path=None):
-    pass
+    return user_data
 
-def copy_user_config(json_path=None, destination_json_path=None):
-    pass
 
-def procees_configmanager_setup():
+def save_user_config(json_data=None, json_path=None):
+    """Save user configs to json file
+    """
+    json_object = json.dumps(json_data, indent=4)
+    with open(json_path, "w") as outfile:
+        outfile.write(json_object)
+
+    return json_path
+
+
+
+def copy_user_config(destination_path=None):
+    local_preferences_file = get_local_clarisse_cfg()
+    import shutil
+
+    try:
+        shutil.copy(local_preferences_file, destination_path)
+        print("Preferences copied successfully.")
+
+    except shutil.SameFileError:
+        print("Source and destination represents the same file.")
+        pass
+
+    except PermissionError:
+        print("Permission denied. Check Your folders permissions.")
+
+    except Exception as unknownerror:
+        print("Error occurred while copying preferences file: {}.".format(unknownerror))
+
+
+def load_json_settings():
+    """Loads json settings for both modes
+    """
+    with open("config_manager_presets.json", 'r') as filename:
+        data = json.loads(filename)
+    return data
+
+
+
+def load_json_settings_types():
+    """"LOads json settings for pref types
+    """
+
+    with open("config_type_definitions.json", 'r') as filename:
+        configtypes = json.loads(filename)
+
+    return configtypes
+
+
+
+def setup_config():
+    """On first run or triggered, load and set common
+    preferences options for a project file, clarisse will automaticaly
+    save it in the local user folder which we can retrieve and copy for further
+    usage
+    """
+    data = load_json_settings()
+    configtypes = load_json_settings_types()
+
+    for d in data:
+        print(d)
+        # print(data[d])
+        for a in data[d]:
+            for p in data[d][a]:
+                for k in p.keys():
+                    print(k, p[k])
+                    print(configtypes[k])
+
+
+
+
+def legacy_procees_configmanager_setup():
+    """Brute force loading and setting preferences
+    """
+    from openpype.pipeline.context_tools import get_current_project_asset
     import ix
+
     asset_doc = get_current_project_asset()
     asset_data = asset_doc["data"]
     project_fps = float(asset_data.get("fps", 25))
 
     # general settings
+    ix.application.get_prefs(ix.api.AppPreferences.MODE_APPLICATION).set_string_value("general", "startup_scene",
+                                                                                      "c:/newpipe/projects/develop/cl_layouts/work/layouts/develop_cl_layouts_layouts_v001.project")
     ix.application.get_prefs(ix.api.AppPreferences.MODE_APPLICATION).set_preset_value("Input_Output", "openEXR_compression_method", "DWAB Compression")
 
     # color managment settings

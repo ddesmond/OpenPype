@@ -24,7 +24,7 @@ from openpype.tools.utils import host_tools
 from openpype.host import HostBase, ILoadHost, IWorkfileHost
 
 from openpype.hosts.clarisse import CLARISSE_ROOT_DIR
-
+from .command import create_support_ticket
 
 PLUGINS_DIR = os.path.join(CLARISSE_ROOT_DIR, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
@@ -225,7 +225,7 @@ def _install_menu():
 
     menu.add_command(menu_name + "{Utilities}")
 
-    from .command import reset_frame_range, reset_resolution, set_project_fps
+    from .command import reset_frame_range, reset_resolution, set_project_fps, set_project_config_defaults
 
     add_command_callback(menu, menu_name + "Reset resolution",
                          callback=lambda: reset_resolution())
@@ -235,6 +235,15 @@ def _install_menu():
 
     add_command_callback(menu, menu_name + "Set Project FPS",
                          callback=lambda: set_project_fps())
+
+    menu.add_command(menu_name + "{Preferences}")
+    add_command_callback(menu, menu_name + "Set Local Project Preferences To Defaults",
+                         callback=lambda: set_project_config_defaults())
+
+    menu.add_command(menu_name + "{Support}")
+    add_command_callback(menu, menu_name + "Create Pipeline Support Ticket",
+                         callback=lambda: create_support_ticket())
+
 
 def imprint(node, data, group="openpype"):
     """Store string attributes with value on a node

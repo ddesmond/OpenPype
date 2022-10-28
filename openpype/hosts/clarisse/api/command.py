@@ -1,9 +1,12 @@
 import logging
+import os
+
 import ix
 
 from openpype.pipeline.context_tools import get_current_project_asset
+from .config_manager import legacy_procees_configmanager_setup
 
-from .lib import command_batch
+from .lib import command_batch, popsup
 
 log = logging.getLogger(__name__)
 
@@ -74,3 +77,28 @@ def reset_resolution():
         image.attrs.resolution[0] = width
         image.attrs.resolution[1] = height
         image.attrs.resolution_multiplier = "2"
+
+
+def set_project_config_defaults():
+    """Load up configs and set prefs to local user config file
+    """
+    ix.log_info("Setting up Local user Preferences")
+
+    if os.environ.get("CLARISSE_LOADED_CONFIG"):
+        print("Configuration file has already been set from App launch. You cant load any prefs.")
+        print("Currently loaded config path is {}".format(os.environ["CLARISSE_LOADED_CONFIG"]))
+
+    else:
+        print("Loading up global default preferences into local user config file.")
+        legacy_procees_configmanager_setup()
+        print("Please re-save your project file manualy.")
+        infotext = """
+            Clarisse Preferences:\n
+            Clarisse User preferences have been changed.
+            """
+        popsup(info_text=infotext)
+
+
+def create_support_ticket():
+    import webbrowser
+    webbrowser.open("https://google.com")
