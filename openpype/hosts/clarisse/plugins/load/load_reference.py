@@ -12,7 +12,7 @@ class ReferenceLoader(load.LoaderPlugin):
 
     label = "Reference File"
     families = ["*"]
-    representations = ["abc", "usd", "usda"]
+    representations = ["abc", "usd", "usda", "usdc"]
     order = 0
 
     icon = "code-fork"
