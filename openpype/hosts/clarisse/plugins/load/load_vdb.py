@@ -33,14 +33,12 @@ class VDBLoader(load.LoaderPlugin):
         imports_context = str(get_imports_context()) + "/volumes"
         create_sub_contexts = create_import_contexts()
 
-        # Create the file reference
-        node = ix.cmds.CreateObject("VDB_LOAD", "GeometryVolumeFile", "Global", imports_context)
-        ix.cmds.SetValues(["build://project/IMPORTS/volumes/VDB_LOAD.filename[0]"], [str(filepath)])
-
-        # lets rename the project item
         node_name = "{}_{}".format(namespace, name) if namespace else name
         namespace = namespace if namespace else context["asset"]["name"]
-        ix.cmds.RenameItem(imports_context + "/VDB_LOAD", str(namespace + "_" + node_name))
+
+        # Create the file reference
+        node = ix.cmds.CreateObject(namespace + "_vdb", "GeometryVolumeFile", "Global", imports_context)
+        ix.cmds.SetValues([str(node) + ".filename[0]"], [str(filepath)])
 
         # set trigger to check if sequence
         node.call_action("detect_sequence")
