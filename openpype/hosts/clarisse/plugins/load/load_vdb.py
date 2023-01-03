@@ -7,8 +7,6 @@ from openpype.hosts.clarisse.api.lib import get_imports_context, create_import_c
 
 import ix
 
-
-
 class VDBLoader(load.LoaderPlugin):
     """Reference VDB content into Clarisse"""
 
@@ -37,7 +35,7 @@ class VDBLoader(load.LoaderPlugin):
         namespace = namespace if namespace else context["asset"]["name"]
 
         # Create the file reference
-        node = ix.cmds.CreateObject(namespace + "_vdb", "GeometryVolumeFile", "Global", imports_context)
+        node = ix.cmds.CreateObject(namespace, "GeometryVolumeFile", "Global", imports_context)
         ix.cmds.SetValues([str(node) + ".filename[0]"], [str(filepath)])
 
         # set trigger to check if sequence
