@@ -11,9 +11,9 @@ import ix
 
 
 class AlembicBundleLoader(load.LoaderPlugin):
-    """Reference Alembic into Clarisse USDBundle"""
+    """Reference Alembic into Clarisse AlembicBundle"""
 
-    label = "ABC Bundle File"
+    label = "Bundle File"
     families = ["*"]
     representations = ["abc"]
     order = 0
@@ -31,7 +31,7 @@ class AlembicBundleLoader(load.LoaderPlugin):
         node_name = "{}_{}".format(namespace, name) if namespace else name
         namespace = namespace if namespace else context["asset"]["name"]
 
-        node = ix.cmds.CreateObject(namespace + "_bndl", "GeometryBundleAlembic", "Global", imports_context)
+        node = ix.cmds.CreateObject(namespace, "GeometryBundleAlembic", "Global", imports_context)
         ix.cmds.SetValues([str(node) + ".filename[0]"], [str(filepath)])
 
         # Imprint it with some data so ls() can find this
