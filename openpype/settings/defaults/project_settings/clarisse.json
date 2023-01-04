@@ -1,0 +1,29 @@
+{
+    "create": {
+        "CreateRenderOutput": {
+            "enabled": true,
+            "defaults": []
+        },
+        "CreateContextProjectOutput": {
+            "enabled": true,
+            "defaults": []
+        },
+        "CreateUSDOutput": {
+            "enabled": true,
+            "defaults": []
+        }
+    },
+    "publish": {
+        "ValidateWorkfilePaths": {
+            "enabled": true,
+            "optional": true,
+            "node_types": [],
+            "prohibited_vars": []
+        },
+        "ValidateContainers": {
+            "enabled": true,
+            "optional": true,
+            "active": true
+        }
+    }
+}
