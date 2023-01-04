@@ -13,7 +13,7 @@ import ix
 class USDBundleLoader(load.LoaderPlugin):
     """Reference USD into Clarisse USDBundle"""
 
-    label = "USD Bundle File"
+    label = "Bundle File"
     families = ["*"]
     representations = ["usd", "usda", "usdc"]
     order = 0
