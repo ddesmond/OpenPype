@@ -49,7 +49,6 @@ class CollectInstances(pyblish.api.ContextPlugin):
 
             for layer in collected_layers:
                 full_name_path = str(layer).split(".")[-1]
-
                 layer_data = self.attribute_collect(layer)
                 if layer_data["render_to_disk"]:
                     active = True
@@ -57,12 +56,18 @@ class CollectInstances(pyblish.api.ContextPlugin):
                     active = False
 
                 instance = context.create_instance(str(layer))
+                if "$PDIR" in layer_data["save_as"]:
+                    import ix
+                    pdir = ix.application.get_factory().get_vars().get("PDIR").get_string()
+                    fullpath = str(layer_data["save_as"]).replace("$PDIR", pdir)
+                else:
+                    fullpath = layer_data["save_as"]
 
                 instance.data.update({
                     "asset": os.environ["AVALON_ASSET"],  # todo: not a constant
-                    "subset": "default",
-                    "path": layer_data["save_as"],
-                    "outputDir": os.path.dirname(layer_data["save_as"]),
+                    "subset": "default", # todo un-hardcode
+                    "path": fullpath,
+                    "outputDir": os.path.dirname(fullpath),
                     "ext": "exr",  # todo: should be redundant
                     "label": full_name_path,
                     "frameStart": layer_data["first_frame"],
@@ -71,7 +76,7 @@ class CollectInstances(pyblish.api.ContextPlugin):
                     "families": ["render", "review"],
                     "family": "render",
                     "active": active,
-                    "publish": active  # backwards compatibility
+                    "publish": active # backwards compatibility,
                 })
 
                 instance.append(layer)
