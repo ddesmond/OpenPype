@@ -1,3 +1,5 @@
+import os.path
+
 from openpype.pipeline import (
     load,
     get_representation_path
@@ -7,25 +9,20 @@ from openpype.hosts.clarisse.api.lib import get_imports_context, create_import_c
 
 import ix
 
-class ReferenceLoader(load.LoaderPlugin):
-    """Reference content into Clarisse"""
 
-    label = "Reference File"
+class USDBundleLoader(load.LoaderPlugin):
+    """Reference USD into Clarisse USDBundle"""
+
+    label = "Bundle File"
     families = ["*"]
-    representations = ["abc", "usd", "usda", "usdc"]
+    representations = ["usd", "usda", "usdc"]
     order = 0
 
     icon = "code-fork"
     color = "orange"
 
     def load(self, context, name=None, namespace=None, data=None):
-        # todo: clarisse ix batch commands?
-
-        filepath = self.fname
-
-        # Command fails on unicode so we must force it to be strings
-        # todo: can we do a better conversion, e.g. f.decode("utf8")
-        filepath = str(filepath)
+        filepath = str(self.fname)
 
         # Create the file reference
         imports_context = str(get_imports_context()) + "/geometry"
@@ -33,9 +30,9 @@ class ReferenceLoader(load.LoaderPlugin):
 
         node_name = "{}_{}".format(namespace, name) if namespace else name
         namespace = namespace if namespace else context["asset"]["name"]
-        node = ix.cmds.CreateFileReference(imports_context, [filepath])
-        ix.cmds.RenameItem(str(node),
-                           namespace)
+
+        node = ix.cmds.CreateObject(namespace, "GeometryBundleUsd", "Global", imports_context)
+        ix.cmds.SetUsdBundleFilename([str(node) + ".filename[0]"], [str(filepath)], [0])
 
         # Imprint it with some data so ls() can find this
         # particular loaded content and can return it as a
@@ -49,22 +46,17 @@ class ReferenceLoader(load.LoaderPlugin):
         )
         ix.application.check_for_events()
 
-
     def update(self, container, representation):
         node = container["node"]
         filepath = get_representation_path(representation)
-
-        # Command fails on unicode so we must force it to be strings
-        # todo: can we do a better conversion, e.g. f.decode("utf8")
         filepath = str(filepath)
-        ix.cmds.SetReferenceFilename([node], filepath)
 
-        # todo: do we need to explicitly trigger reload?
+        ix.cmds.SetUsdBundleFilename([str(node) + ".filename[0]"], [str(filepath)], [0])
+
         # Update the representation id
         ix.cmds.SetValues([str("{}.openpype_representation[0]".format(node))],
                           [str(representation["_id"])])
         ix.application.check_for_events()
-
 
     def remove(self, container):
         node = container["node"]

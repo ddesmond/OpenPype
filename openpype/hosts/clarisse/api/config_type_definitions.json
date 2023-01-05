@@ -1,0 +1,21 @@
+{
+    "openEXR_compression_method": "preset",
+    "use_ocio_config_file": "bool",
+    "ocio_config_file": "string",
+    "scene_color_space": "preset",
+    "default_view_transform": "preset",
+    "color_picker_color_space": "preset",
+    "stream_texture_cache": "double",
+    "image_history_cache_max_count": "long",
+    "image_history_cache_path": "string",
+    "image_history_autosave": "bool",
+    "image_history_cache_max_size": "double",
+    "frames_per_second": "double",
+    "default_resolution_preset": "preset",
+    "default_x_resolution": "long",
+    "default_y_resolution": "long",
+    "default_display_aspect_ratio": "double",
+    "start_frame": "double",
+    "end_frame": "double",
+    "startup_scene": "string"
+}

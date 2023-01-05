@@ -360,6 +360,72 @@
             ]
         },
         {
+            "key": "clarisse",
+            "type": "dict",
+            "label": "Clarisse iFX",
+            "children": [
+                {
+                    "key": "viewer",
+                    "type": "dict",
+                    "label": "Viewer",
+                    "collapsible": false,
+                    "children": [
+                        {
+                            "type": "text",
+                            "key": "viewer3d",
+                            "label": "3d viewer"
+                        }
+                    ]
+                },
+                {
+                    "key": "layer",
+                    "type": "dict",
+                    "label": "Layer",
+                    "collapsible": false,
+                    "children": [
+                        {
+                            "type": "text",
+                            "key": "renderLayer",
+                            "label": "Render Layer"
+                        }
+                    ]
+                },
+                {
+                    "key": "workfile",
+                    "type": "dict",
+                    "label": "Workfile",
+                    "collapsible": false,
+                    "children": [
+                        {
+                            "type": "form",
+                            "children": [
+                                {
+                                    "type": "enum",
+                                    "key": "OCIO_config",
+                                    "label": "OpenColorIO Config",
+                                    "enum_items": [
+                                        {
+                                            "clarisse-default": "clarisse-default"
+                                        },
+                                        {
+                                            "aces_1.2": "aces_1.2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "path",
+                                    "key": "customOCIOConfigPath",
+                                    "label": "Custom OCIO config path",
+                                    "multiplatform": true,
+                                    "multipath": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "key": "maya",
             "type": "dict",
             "label": "Maya",

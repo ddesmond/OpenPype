@@ -1,0 +1,86 @@
+{
+  "config_definition_mode_app": {
+    "general": [
+      {
+        "startup_scene": ""
+      }
+    ],
+    "Input_Output": [
+      {
+        "openEXR_compression_method": "DWAB Compression"
+      },
+      {
+        "stream_texture_cache": 10240
+      }
+    ],
+    "color_management": [
+      {
+        "use_ocio_config_file": "False"
+      },
+      {
+        "ocio_config_file": ""
+      },
+      {
+        "scene_color_space": "Use scene_linear"
+      },
+      {
+        "default_view_transform": "Clarisse.sRGB"
+      },
+      {
+        "color_picker_color_space": "Use Default"
+      }
+    ],
+    "image_history": [
+      {
+        "image_history_cache_max_count": 40
+      },
+      {
+        "image_history_cache_path": ""
+      },
+      {
+        "image_history_autosave": "False"
+      },
+      {
+        "image_history_cache_max_size": 8096
+      }
+    ],
+    "animation": [
+      {
+        "frames_per_second": "25"
+      },
+      {
+        "start_frame": 1001.0
+      },
+      {
+        "end_frame": 1100.0
+      }
+    ]
+  },
+  "config_definition_mode_prefs": {
+    "animation": [
+      {
+        "frames_per_second": 25
+      },
+      {
+        "start_frame": 1001.0
+      },
+      {
+        "end_frame": 1100.0
+      }
+    ],
+    "rendering": [
+      {
+        "default_resolution_preset": "Custom"
+      },
+      {
+        "default_x_resolution": 1920
+      },
+      {
+        "default_y_resolution": 1080
+      },
+      {
+        "default_display_aspect_ratio": 1
+      }
+    ]
+  }
+}
