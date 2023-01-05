@@ -13,6 +13,10 @@
             "label": "Create Render Image"
           },
           {
+            "key": "CreateDebugLogs",
+            "label": "Create Asset debug"
+          },
+          {
             "key": "CreateContextProjectOutput",
             "label": "Create Project Export for Referencing"
           },

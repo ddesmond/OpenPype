@@ -6,12 +6,87 @@
     "is_file": true,
     "children": [
         {
+            "key": "imageio",
+            "type": "dict",
+            "label": "Color Management (ImageIO)",
+            "collapsible": true,
+            "children": [
+                {
+                    "key": "viewer",
+                    "type": "dict",
+                    "label": "Viewer",
+                    "collapsible": false,
+                    "children": [
+                        {
+                            "type": "text",
+                            "key": "viewer3d",
+                            "label": "3d viewer"
+                        }
+                    ]
+                },
+                {
+                    "key": "layer",
+                    "type": "dict",
+                    "label": "Layer",
+                    "collapsible": false,
+                    "children": [
+                        {
+                            "type": "text",
+                            "key": "renderLayer",
+                            "label": "Render Layer"
+                        }
+                    ]
+                },
+                {
+                    "key": "workfile",
+                    "type": "dict",
+                    "label": "Workfile",
+                    "collapsible": false,
+                    "children": [
+                        {
+                            "type": "form",
+                            "children": [
+                                {
+                                    "type": "enum",
+                                    "key": "OCIO_config",
+                                    "label": "OpenColorIO Config",
+                                    "enum_items": [
+                                        {
+                                            "clarisse-default": "clarisse-default"
+                                        },
+                                        {
+                                            "aces_1.2": "aces_1.2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "path",
+                                    "key": "customOCIOConfigPath",
+                                    "label": "Custom OCIO config path",
+                                    "multiplatform": true,
+                                    "multipath": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "type": "schema",
             "name": "schema_clarisse_create"
         },
         {
             "type": "schema",
             "name": "schema_clarisse_publish"
+        },
+        {
+            "type": "schema",
+            "name": "schema_workfile_build"
+        },
+        {
+            "type": "schema",
+            "name": "schema_templated_workfile_build"
         }
     ]
 }
