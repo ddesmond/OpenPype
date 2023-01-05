@@ -66,7 +66,6 @@ def reload_config():
     """
 
     for module in (
-        "openpype.api",
         "openpype.hosts.nuke.api.actions",
         "openpype.hosts.nuke.api.menu",
         "openpype.hosts.nuke.api.plugin",
@@ -364,6 +363,9 @@ def containerise(node,
     )
 
     set_avalon_knob_data(node, data)
+
+    # set tab to first native
+    node.setTab(0)
 
     return node
 
