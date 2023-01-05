@@ -987,26 +987,28 @@
                     "windows": [
                         "C:\\Program Files\\Isotropix\\Clarisse 5.0 SP9\\Clarisse\\clarisse.exe"
                     ],
-                    "darwin": ["/Applications/Isotropix/Clarisse 5.0 SP9/clarisse.app/Contents/MacOS/clarisse-py3"],
+                    "darwin": [
+                        "/Applications/Isotropix/Clarisse 5.0 SP9/clarisse.app/Contents/MacOS/clarisse-py3"
+                    ],
                     "linux": []
                 },
                 "arguments": {
                     "windows": [
-                            "-flavor",
-                            "ifx"
-                                ],
+                        "-flavor",
+                        "ifx"
+                    ],
                     "darwin": [
-                            "-flavor",
-                            "ifx"
-                                ],
+                        "-flavor",
+                        "ifx"
+                    ],
                     "linux": [
-                            "-flavor",
-                            "ifx"
-                                ]
+                        "-flavor",
+                        "ifx"
+                    ]
                 },
-                "environment":  {
-                            "IX_PYTHON3PATH": "{PYTHONPATH}"
-                                }
+                "environment": {
+                    "IX_PYTHON3PATH": "{PYTHONPATH}"
+                }
             }
         }
     },
