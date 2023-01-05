@@ -7,11 +7,11 @@ from openpype.hosts.clarisse.api.lib import get_imports_context, create_import_c
 
 import ix
 
-class ReferenceLoader(load.LoaderPlugin):
+class CameraReferenceLoader(load.LoaderPlugin):
     """Reference Camera into Clarisse"""
 
     label = "Reference Camera File"
-    families = ["*"]
+    families = ["camera"]
     representations = ["abc"]
     order = 0
 

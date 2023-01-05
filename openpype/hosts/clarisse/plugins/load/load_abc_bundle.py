@@ -14,7 +14,7 @@ class AlembicBundleLoader(load.LoaderPlugin):
     """Reference Alembic into Clarisse AlembicBundle"""
 
     label = "Bundle File"
-    families = ["*"]
+    families = ["model", "animation", "pointcache", "gpuCache", "geometry"]
     representations = ["abc"]
     order = 0
 

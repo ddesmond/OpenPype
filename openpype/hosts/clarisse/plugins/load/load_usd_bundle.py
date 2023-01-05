@@ -14,7 +14,7 @@ class USDBundleLoader(load.LoaderPlugin):
     """Reference USD into Clarisse USDBundle"""
 
     label = "Bundle File"
-    families = ["*"]
+    families = ["model", "animation", "pointcache", "gpuCache", "geometry"]
     representations = ["usd", "usda", "usdc"]
     order = 0
 
