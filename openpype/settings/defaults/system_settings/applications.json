@@ -114,35 +114,6 @@
             }
         }
     },
-    "3dsmax": {
-        "enabled": true,
-        "label": "3ds max",
-        "icon": "{}/app_icons/3dsmax.png",
-        "host_name": "max",
-        "environment": {
-            "ADSK_3DSMAX_STARTUPSCRIPTS_ADDON_DIR": "{OPENPYPE_ROOT}\\openpype\\hosts\\max\\startup"
-        },
-        "variants": {
-            "2023": {
-                "use_python_2": false,
-                "executables": {
-                    "windows": [
-                        "C:\\Program Files\\Autodesk\\3ds Max 2023\\3dsmax.exe"
-                    ],
-                    "darwin": [],
-                    "linux": []
-                },
-                "arguments": {
-                    "windows": [],
-                    "darwin": [],
-                    "linux": []
-                },
-                "environment": {
-                    "3DSMAX_VERSION": "2023"
-                }
-            }
-        }
-    },
     "flame": {
         "enabled": true,
         "label": "Flame",
@@ -1102,6 +1073,9 @@
                 "environment": {
                     "IX_PYTHON3PATH": "{PYTHONPATH}"
                 }
+            },
+            "__dynamic_keys_labels__": {
+                "5-0-SP9": "5.0sp9"
             }
         }
     },
@@ -1335,12 +1309,12 @@
             "CELACTION_TEMPLATE": "{OPENPYPE_REPOS_ROOT}/openpype/hosts/celaction/celaction_template_scene.scn"
         },
         "variants": {
-            "current": {
+            "local": {
                 "enabled": true,
-                "variant_label": "Current",
+                "variant_label": "",
                 "use_python_2": false,
                 "executables": {
-                    "windows": ["C:/Program Files/CelAction/CelAction2D Studio/CelAction2D.exe"],
+                    "windows": [],
                     "darwin": [],
                     "linux": []
                 },
