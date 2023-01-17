@@ -1,3 +1,5 @@
+import os.path
+
 from openpype.pipeline import (
     load,
     get_representation_path
@@ -7,40 +9,31 @@ from openpype.hosts.clarisse.api.lib import get_imports_context, create_import_c
 
 import ix
 
-class VDBLoader(load.LoaderPlugin):
-    """Reference VDB content into Clarisse"""
 
-    label = "Reference VDB File"
-    families = ["*"]
-    representations = ["vdb"]
+class USDBundleLoader(load.LoaderPlugin):
+    """Reference USD into Clarisse USDBundle"""
+
+    label = "Bundle File"
+    families = ["model", "animation", "pointcache", "gpuCache", "geometry"]
+    representations = ["usd", "usda", "usdc"]
     order = 0
 
     icon = "code-fork"
     color = "orange"
 
     def load(self, context, name=None, namespace=None, data=None):
-        # todo: clarisse ix batch commands?
+        filepath = str(self.fname)
 
-        filepath = self.fname
-
-        # Command fails on unicode so we must force it to be strings
-        # todo: can we do a better conversion, e.g. f.decode("utf8")
-        filepath = str(filepath)
-
-        # take care of import contexts
-        imports_context = str(get_imports_context()) + "/volumes"
+        # Create the file reference
+        imports_context = str(get_imports_context()) + "/geometry"
         create_sub_contexts = create_import_contexts()
 
         node_name = "{}_{}".format(namespace, name) if namespace else name
         namespace = namespace if namespace else context["asset"]["name"]
-        namespace = "vdb_" + namespace + "_" + node_name
+        namespace = "bundle_" + namespace + "_" + node_name
 
-        # Create the file reference
-        node = ix.cmds.CreateObject(namespace, "GeometryVolumeFile", "Global", imports_context)
-        ix.cmds.SetValues([str(node) + ".filename[0]"], [str(filepath)])
-
-        # set trigger to check if sequence
-        node.call_action("detect_sequence")
+        node = ix.cmds.CreateObject(namespace, "GeometryBundleUsd", "Global", imports_context)
+        ix.cmds.SetUsdBundleFilename([str(node) + ".filename[0]"], [str(filepath)], [0])
 
         # Imprint it with some data so ls() can find this
         # particular loaded content and can return it as a
@@ -54,17 +47,13 @@ class VDBLoader(load.LoaderPlugin):
         )
         ix.application.check_for_events()
 
-
     def update(self, container, representation):
         node = container["node"]
         filepath = get_representation_path(representation)
-
-        # Command fails on unicode so we must force it to be strings
-        # todo: can we do a better conversion, e.g. f.decode("utf8")
         filepath = str(filepath)
-        ix.cmds.SetValues([str(node)+".filename[0]"], [str(filepath)])
 
-        # todo: do we need to explicitly trigger reload?
+        ix.cmds.SetUsdBundleFilename([str(node) + ".filename[0]"], [str(filepath)], [0])
+
         # Update the representation id
         ix.cmds.SetValues([str("{}.openpype_representation[0]".format(node))],
                           [str(representation["_id"])])

@@ -23,11 +23,19 @@ def command_batch(name):
 def get_imports_context():
     """Get import context or create one so we can load files"""
     _get_root_imports = ix.item_exists("build://project/IMPORTS")
-
     if _get_root_imports:
         return _get_root_imports
     else:
         return ix.cmds.CreateContext("IMPORTS", "Global", "build://project/")
+
+
+def get_export_context():
+    """Get import context or create one so we can load files"""
+    _get_root_imports = ix.item_exists("build://project/EXPORTS")
+    if _get_root_imports:
+        return _get_root_imports
+    else:
+        return ix.cmds.CreateContext("EXPORTS", "Global", "build://project/")
 
 
 def check_ctx(ctx):
@@ -35,6 +43,14 @@ def check_ctx(ctx):
     # check for context creation
     if ix.item_exists(str("build://project/IMPORTS/"+str(ctx))):
         return True
+
+
+def check_ctx_exports(ctx):
+    """Check if context exists"""
+    # check for context creation
+    if ix.item_exists(str("build://project/EXPORTS/"+str(ctx))):
+        return True
+
 
 def gather_all_filenames_projectitems():
     """Gathers all objects/ project item class to a list
@@ -104,13 +120,23 @@ def gather_all_layers_from_image(image=None):
 
 def create_import_contexts():
     """Create ctxs in IMPORT for asset types"""
-    ctx_import_types = ["geometry", "cameras", "volumes"]
+    ctx_import_types = ["geometry", "cameras", "volumes", "projects", "contexts"]
     ctx_list = []
     for ctx in ctx_import_types:
         if not check_ctx(str(ctx)):
             ctx = ix.cmds.CreateContext(str(ctx), "Global", "build://project/IMPORTS/")
             ctx_list.append(str(ctx))
+    return ctx_list
 
+
+def create_exports_contexts():
+    """Create ctxs in IMPORT for asset types"""
+    ctx_export_types = ["camera", "geometry", "look", "context"]
+    ctx_list = []
+    for ctx in ctx_export_types:
+        if not check_ctx_exports(str(ctx)):
+            ctx = ix.cmds.CreateContext(str(ctx), "Global", "build://project/EXPORTS/")
+            ctx_list.append(str(ctx))
     return ctx_list
 
 
@@ -141,3 +167,28 @@ def make_all_contexts_local():
         ix.cmds.MakeLocalContext(ctx)
 
     ix.application.check_for_events()
+
+
+def popsup(info_text=None):
+    """Popsup a simple info-warning window in clarisse ui
+    """
+    app = ix.application
+    clarisse_window = app.get_event_window()
+    box = ix.api.GuiMessageBox(app, 0, 0, "Pipeline Information",  info_text)
+    box.set_resizable(True)
+    box.resize(350,350,400,200)
+    box.show()
+
+
+def get_selected_context():
+    """Gets a selection and checks if its a context
+    Returns the first selection only
+    """
+    _app = ix.application
+    if _app.get_selection().get_count() > 0:
+        item = _app.get_selection().get_item(0)
+        if item.is_context():
+            context_selected = item.to_context()
+            if context_selected:
+                print("Context selection",context_selected)
+                return context_selected

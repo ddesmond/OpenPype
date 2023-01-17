@@ -8,6 +8,9 @@ from collections import OrderedDict
 from pyblish import api as pyblish
 
 import ix
+
+from openpype.lib import register_event_callback
+from openpype.settings import get_anatomy_settings
 from . import lib
 import pyblish.api
 
@@ -21,7 +24,7 @@ from openpype.tools.utils import host_tools
 from openpype.host import HostBase, ILoadHost, IWorkfileHost
 
 from openpype.hosts.clarisse import CLARISSE_ROOT_DIR
-
+from .command import create_support_ticket
 
 PLUGINS_DIR = os.path.join(CLARISSE_ROOT_DIR, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
@@ -34,6 +37,9 @@ OPENPYPE_ATTR_PREFIX = "openpype_"
 self = sys.modules[__name__]
 self._menu = "OpenPype>"
 self._menu_callbacks = {}    # store custom menu callbacks, see _install_menu
+
+
+
 
 
 class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
@@ -50,14 +56,19 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         register_loader_plugin_path(LOAD_PATH)
         register_creator_plugin_path(CREATE_PATH)
         register_inventory_action_path(INVENTORY_PATH)
+        # Register Avalon event for workfiles loading.
+        # register_event_callback("open_workfile", check_inventory_versions)
+        # register_event_callback("taskChanged", change_context_label)
 
         _install_menu()
 
     def open_workfile(self, filepath):
         return ix.load_project(str(filepath))
 
+
     def save_workfile(self, filepath=None):
         return ix.save_project(filepath)
+
 
     def work_root(self, session):
         work_dir = session.get("AVALON_WORKDIR")
@@ -67,12 +78,20 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         else:
             return work_dir
 
+
     def get_current_workfile(self):
         return get_current_clarisseproject()
 
+
     def workfile_has_unsaved_changes(self):
-        if not "untitled" in self.get_current_workfile():
+        # dont ask to save if we are on the startup scene without a name ¬ set to untitled project and return False
+        if ix.application.get_factory().get_vars().get("PNAME").get_string() + ".project" == "untitled.project":
+            return False
+        else:
+            # seems in version 5 clarisse raises save UI on change anyways. Report this as a bug to Isotropix
+            # workfile_has_unsaved_changes will always show a popup
             return ix.check_need_save()
+
 
     def get_workfile_extensions(self):
         return [".project"]
@@ -87,6 +106,7 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         could be cleaner thou... next time...
         """
         all_files = []
+        dissallow = ["AbcExportOptionsUi"]
         class_names = ix.api.CoreStringArray(1)
         class_names[0] = "ProjectItem"
         empty_mask = ix.api.CoreBitFieldHelper()
@@ -95,24 +115,27 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
         root_context.get_all_objects(class_names, all_objects, empty_mask)
         for f in range(all_objects.get_count()):
             item = ix.item_exists(str(all_objects[f]))
-            try:
+
+            if not item.get_class_name() in dissallow:
                 # we check for any item with filename but we want to
                 # avoid children of a reference context
-                if item.attrs.filename:
-                    #check for references
-                    if ix.get_item(str(item.get_parent_item())).is_reference():
-                        # check parent if openpype attribute
-                        if item.get_parent_item().attribute_exists("openpype_id"):
-                            refed_item = item.get_parent_item()
-                    else:
-                        # check for any other item with file in it
-                        # can be a texture map or vdb item or obj
-                        if item.attribute_exists("openpype_id"):
-                            refed_item = item
 
-                    all_files.append(refed_item)
-            except:
-                pass
+                if ix.get_item(str(item.get_parent_item())).is_reference():
+                    # check parent if openpype attribute
+                    if item.get_parent_item().attribute_exists("openpype_id"):
+                        refed_item = item.get_parent_item()
+                        all_files.append(refed_item)
+                else:
+                    # check for any other item with file in it
+                    # can be a texture map or vdb item or obj
+                    if item.attribute_exists("openpype_id"):
+                        # dirty way
+                        try:
+                            if item.get_parent_item().attribute_exists("op_creator_object"):
+                                pass
+                        except:
+                            refed_item = item
+                            all_files.append(refed_item)
 
             if load_layers:
                 # we need to include also all possible image layers where
@@ -127,7 +150,7 @@ class ClarisseHost(HostBase, IWorkfileHost, ILoadHost):
                         except:
                             pass
 
-        return all_files
+        return set(all_files)
 
 
     def get_containers(self):
@@ -198,6 +221,12 @@ def _install_menu():
     menu.add_command(menu_name)
 
     # Add commands
+    menu.add_command(menu_name + "{Work - Load / Save Project files}")
+
+    add_command_callback(menu, menu_name + "Work Files",
+                         callback=lambda: host_tools.show_workfiles())
+
+    menu.add_command(menu_name + "{Manage your Work}")
     add_command_callback(menu, menu_name + "Create...",
                          callback=lambda: host_tools.show_creator())
     add_command_callback(menu, menu_name + "Load...",
@@ -210,14 +239,13 @@ def _install_menu():
     add_command_callback(menu, menu_name + "Library...",
                          callback=lambda: host_tools.show_library_loader())
 
-    menu.add_command(menu_name + "{Work}")
-
-    add_command_callback(menu, menu_name + "Work Files",
-                         callback=lambda: host_tools.show_workfiles())
 
     menu.add_command(menu_name + "{Utilities}")
 
-    from .command import reset_frame_range, reset_resolution, set_project_fps
+    from .command import reset_frame_range, reset_resolution, set_project_fps, set_project_config_defaults
+    from .workfile_setup import build_workfile_template
+    add_command_callback(menu, menu_name + "Build Work File",
+                         callback=lambda: build_workfile_template())
 
     add_command_callback(menu, menu_name + "Reset resolution",
                          callback=lambda: reset_resolution())
@@ -227,6 +255,15 @@ def _install_menu():
 
     add_command_callback(menu, menu_name + "Set Project FPS",
                          callback=lambda: set_project_fps())
+
+    menu.add_command(menu_name + "{Preferences}")
+    add_command_callback(menu, menu_name + "Set Local Project Preferences To Defaults",
+                         callback=lambda: set_project_config_defaults())
+
+    menu.add_command(menu_name + "{Support}")
+    add_command_callback(menu, menu_name + "Create Pipeline Support Ticket",
+                         callback=lambda: create_support_ticket())
+
 
 def imprint(node, data, group="openpype"):
     """Store string attributes with value on a node
@@ -334,3 +371,84 @@ def clarisse_project_file_lock_and_undo_chunk(clarisse_project_file, undo_queue_
         yield
     finally:
         ix.end_command_batch()
+
+
+### data node holding workfile info
+
+def get_or_create_data_node():
+    """Gets or creates a data node necesery for workfile publishing
+    DO NOT EDIT MANUALY THIS NODE INSIDE A CLARISSE SESSION
+    """
+    data_path = ix.item_exists("build://project/")
+    data_node = ix.item_exists("build://project/DATA_NODE")
+    if data_node is None:
+        data_node = ix.create_object("DATA_NODE", "ProjectItem", data_path)
+        ix.cmds.CreateCustomAttribute([str(data_node)], "content", 3, ["container", "vhint", "group", "count", "allow_expression"], ["CONTAINER_SINGLE", "VISUAL_HINT_DEFAULT", "general", "1", "0"])
+        assert data_node, "DATA_NODE Project: failed to create DATA_NODE object in '{}'.".format(data_path)
+    return data_node
+
+
+def set_data_node_content(content=None):
+    if content:
+        node = ix.get_item(str(get_or_create_data_node()))
+        ix.cmds.SetValues([str(node)+".content[0]"], [content])
+        return True
+
+
+def get_data_node_content():
+    node = get_or_create_data_node()
+    return node.attrs.content[0]
+
+
+def get_export_containers(creatortype=None):
+    """Get all items which coresponds to exporting a context into an alembic
+    trough an AbcExportOPtionsUi item object class
+    """
+    if creatortype:
+        all_files = []
+        class_names = ix.api.CoreStringArray(2)
+        class_names[0] = "AbcExportOptionsUi"
+        class_names[1] = "ProjectItem"
+        empty_mask = ix.api.CoreBitFieldHelper()
+        all_objects = ix.api.OfObjectArray()
+        root_context = ix.application.get_factory().get_root()
+        root_context.get_all_objects(class_names, all_objects, empty_mask)
+        for f in range(all_objects.get_count()):
+            item = ix.item_exists(str(all_objects[f]))
+            try:
+                if item.attribute_exists("op_creator_object"):
+                    if item.attrs.op_creator_object[0] == creatortype:
+                        all_files.append(item)
+            except:
+                pass
+
+        return all_files
+
+
+def is_valid_item(item):
+    # return object and object.get_attribute_count() > 0
+    if ix.item_exists(str(item)):
+        return item
+
+
+def tag_creator_object(item=None, creator_type=None, selected_context=None, filename=None):
+    """Imprint specific data for the create plugins
+    like camera, context, specific to clarisse.
+    We can use then this attribute to filter items when we need
+    """
+    ix.cmds.CreateCustomAttribute([str(item)], "op_creator_object", 3,
+                                  ["container", "vhint", "group", "count", "allow_expression"],
+                                  ["CONTAINER_SINGLE", "VISUAL_HINT_DEFAULT", "OP", "1", "0"])
+    item.attrs.op_creator_object = str(creator_type)
+    ix.cmds.CreateCustomAttribute([str(item)], "op_sourced_path", 5,
+                                  ["container", "vhint", "group", "count", "allow_expression"],
+                                  ["CONTAINER_SINGLE", "VISUAL_HINT_DEFAULT", "OP", "1", "0"])
+    ix.cmds.SetValues([str(item) + ".op_sourced_path"], [str(selected_context)])
+
+
+    if filename:
+        ix.cmds.CreateCustomAttribute([str(item)], "filename", 4,
+                                      ["container", "vhint", "group", "count", "allow_expression"],
+                                      ["CONTAINER_SINGLE", "VISUAL_HINT_DEFAULT", "OP", "1", "0"])
+
+        ix.cmds.SetValues([str(item) + ".filename"], [str(filename)])
