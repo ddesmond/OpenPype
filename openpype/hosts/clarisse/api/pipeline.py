@@ -260,9 +260,6 @@ def _install_menu():
     add_command_callback(menu, menu_name + "Set Local Project Preferences To Defaults",
                          callback=lambda: set_project_config_defaults())
 
-    menu.add_command(menu_name + "{Support}")
-    add_command_callback(menu, menu_name + "Create Pipeline Support Ticket",
-                         callback=lambda: create_support_ticket())
 
 
 def imprint(node, data, group="openpype"):
