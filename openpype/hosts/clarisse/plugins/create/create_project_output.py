@@ -10,9 +10,9 @@ from openpype.pipeline.create import (
 
 
 class CreateContextProjectOutput(LegacyCreator):
-    """Bake a context into a project file"""
+    """Create a project file from a context"""
 
-    label = "Clarisse Context to project file"
+    label = "Create project from a Context"
     family = "refcontext"
     icon = "magic"
     defaults = ["Main"]

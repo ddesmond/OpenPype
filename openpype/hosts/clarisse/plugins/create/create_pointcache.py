@@ -9,9 +9,9 @@ from openpype.pipeline.create import (
 
 
 class CreateContextOutputCacheModel(LegacyCreator):
-    """Export contexted geometry to file"""
+    """Export contexted geometry to a cache file"""
 
-    label = "Export Geometry Cache"
+    label = "Create Cache from a Context with geometry"
     defaults = ["Main"]
     family = "model"
     icon = "gears"

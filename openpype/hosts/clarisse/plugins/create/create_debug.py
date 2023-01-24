@@ -9,10 +9,9 @@ from openpype.pipeline.create import (
 class CreateDebugLogs(LegacyCreator):
     """Creates a quick debuger for avalon asset"""
 
-    label = "Debug info"
+    label = "Show Debug info in the Log"
     family = "*"
-    identifier = "render_layer"
-    icon = "sign-out"
+    icon = "gears"
     defaults = ["Main"]
 
     def __init__(self, *args, **kwargs):

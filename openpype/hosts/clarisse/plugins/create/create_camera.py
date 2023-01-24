@@ -9,9 +9,9 @@ from openpype.pipeline.create import (
 
 
 class CreateContextOutputCamera(LegacyCreator):
-    """Export contexted camera to file"""
+    """Export contexted camera to a cache file"""
 
-    label = "Export Camera"
+    label = "Create Cache from a Context with a camera"
     defaults = ["Main"]
     family = "camera"
     icon = "video-camera"

@@ -13,7 +13,7 @@ import ix
 class AlembicBundleLoader(load.LoaderPlugin):
     """Reference Alembic into Clarisse AlembicBundle"""
 
-    label = "Bundle File"
+    label = "Reference Alembic Bundle File"
     families = ["model", "animation", "pointcache", "gpuCache", "geometry"]
     representations = ["abc"]
     order = 0

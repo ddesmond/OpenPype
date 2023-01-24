@@ -9,7 +9,7 @@ from openpype.pipeline.create import (
 class CreateRenderOutput(LegacyCreator):
     """Creates an image with a layer set ready for render"""
 
-    label = "Render Layer"
+    label = "Create a Render Output"
     family = "render"
     identifier = "render_layer"
     icon = "sign-out"

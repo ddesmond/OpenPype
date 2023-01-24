@@ -9,7 +9,7 @@ class CreateUSDOutput(LegacyCreator):
     """Bake a context into alembic
     no shading will be exported, just geometry"""
 
-    label = "USD export"
+    label = "Create a USD Export - NA"
     family = "usd"
     icon = "magic"
     defaults = ["Main"]

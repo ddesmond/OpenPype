@@ -10,7 +10,7 @@ import ix
 class WorkfileReferenceLoader(load.LoaderPlugin):
     """Reference project file into Clarisse"""
 
-    label = "Reference File"
+    label = "Reference Workfile"
     families = ["workfile"]
     representations = ["project"]
     order = 0
