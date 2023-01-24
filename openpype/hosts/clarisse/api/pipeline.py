@@ -9,8 +9,7 @@ from pyblish import api as pyblish
 
 import ix
 
-from openpype.lib import register_event_callback
-from openpype.settings import get_anatomy_settings
+
 from . import lib
 import pyblish.api
 
@@ -24,7 +23,7 @@ from openpype.tools.utils import host_tools
 from openpype.host import HostBase, ILoadHost, IWorkfileHost
 
 from openpype.hosts.clarisse import CLARISSE_ROOT_DIR
-from .command import create_support_ticket
+
 
 PLUGINS_DIR = os.path.join(CLARISSE_ROOT_DIR, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
