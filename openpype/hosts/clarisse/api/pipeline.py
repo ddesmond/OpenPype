@@ -9,7 +9,6 @@ from pyblish import api as pyblish
 
 import ix
 
-
 from . import lib
 import pyblish.api
 
@@ -21,9 +20,8 @@ from openpype.pipeline import (
 )
 from openpype.tools.utils import host_tools
 from openpype.host import HostBase, ILoadHost, IWorkfileHost
-
 from openpype.hosts.clarisse import CLARISSE_ROOT_DIR
-
+from .command import set_project_fps, reset_frame_range, reset_resolution
 
 PLUGINS_DIR = os.path.join(CLARISSE_ROOT_DIR, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
@@ -241,10 +239,6 @@ def _install_menu():
 
     menu.add_command(menu_name + "{Utilities}")
 
-    from .command import reset_frame_range, reset_resolution, set_project_fps, set_project_config_defaults
-    from .workfile_setup import build_workfile_template
-    add_command_callback(menu, menu_name + "Build Work File",
-                         callback=lambda: build_workfile_template())
 
     add_command_callback(menu, menu_name + "Reset resolution",
                          callback=lambda: reset_resolution())
@@ -254,10 +248,6 @@ def _install_menu():
 
     add_command_callback(menu, menu_name + "Set Project FPS",
                          callback=lambda: set_project_fps())
-
-    menu.add_command(menu_name + "{Preferences}")
-    add_command_callback(menu, menu_name + "Set Local Project Preferences To Defaults",
-                         callback=lambda: set_project_config_defaults())
 
 
 

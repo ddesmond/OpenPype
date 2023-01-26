@@ -10,7 +10,15 @@
         "template_data": [
           {
             "key": "CreateRenderOutput",
-            "label": "Create Render Image"
+            "label": "Create Render Layer"
+          },
+          {
+            "key": "CreateContextOutputCamera",
+            "label": "Create Export Camera"
+          },
+          {
+            "key": "CreateContextOutputCacheModel",
+            "label": "Create Export Geometry"
           },
           {
             "key": "CreateContextProjectOutput",
@@ -19,6 +27,10 @@
           {
             "key": "CreateUSDOutput",
             "label": "Create Context USD Export"
+          },
+          {
+            "key": "CreateDebugLogs",
+            "label": "Create Asset debug"
           }
         ]
       }

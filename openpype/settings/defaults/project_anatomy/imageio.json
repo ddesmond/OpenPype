@@ -214,6 +214,22 @@
             ]
         }
     },
+    "clarisse": {
+        "viewer": {
+            "viewer3d": "sRGB"
+        },
+        "layer": {
+            "renderLayer": "sRGB"
+        },
+        "workfile": {
+            "OCIO_config": "clarisse-default",
+            "customOCIOConfigPath": {
+                "windows": [],
+                "darwin": [],
+                "linux": []
+            }
+        }
+    },
     "maya": {
         "colorManagementPreference_v2": {
             "enabled": true,

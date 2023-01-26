@@ -1,10 +1,11 @@
-import logging
+import os
+
 import ix
 
 from openpype.pipeline.context_tools import get_current_project_asset
+from .lib import command_batch, popsup
 
-from .lib import command_batch
-
+import logging
 log = logging.getLogger(__name__)
 
 
@@ -74,3 +75,6 @@ def reset_resolution():
         image.attrs.resolution[0] = width
         image.attrs.resolution[1] = height
         image.attrs.resolution_multiplier = "2"
+
+
+

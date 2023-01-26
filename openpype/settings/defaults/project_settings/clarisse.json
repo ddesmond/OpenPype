@@ -1,0 +1,82 @@
+{
+    "imageio": {
+        "viewer": {
+            "viewer3d": ""
+        },
+        "layer": {
+            "renderLayer": "sRGB"
+        },
+        "workfile": {
+            "OCIO_config": "aces_1.2",
+            "customOCIOConfigPath": {
+                "windows": [
+                    "\\pattoocio\\ocio\\1.2\\aces_1.2\\ocio.config"
+                ],
+                "darwin": [],
+                "linux": []
+            }
+        }
+    },
+    "create": {
+        "CreateRenderOutput": {
+            "enabled": true,
+            "defaults": []
+        },
+        "CreateContextOutputCamera": {
+            "enabled": true,
+            "defaults": []
+        },
+        "CreateContextOutputCacheModel": {
+            "enabled": true,
+            "defaults": []
+        },
+        "CreateContextProjectOutput": {
+            "enabled": true,
+            "defaults": []
+        },
+        "CreateUSDOutput": {
+            "enabled": false,
+            "defaults": []
+        },
+        "CreateDebugLogs": {
+            "enabled": true,
+            "defaults": []
+        }
+    },
+    "publish": {
+        "ValidateWorkfilePaths": {
+            "enabled": true,
+            "optional": true,
+            "node_types": [],
+            "prohibited_vars": []
+        },
+        "ValidateContainers": {
+            "enabled": true,
+            "optional": true,
+            "active": true
+        }
+    },
+    "workfile_build": {
+        "profiles": [
+            {
+                "task_types": [
+                    "CG",
+                    "Render",
+                    "Scene"
+                ],
+                "tasks": [],
+                "current_context": [],
+                "linked_assets": []
+            }
+        ]
+    },
+    "templated_workfile_build": {
+        "profiles": [
+            {
+                "task_types": [],
+                "task_names": [],
+                "path": "pathtoprojecfile.project"
+            }
+        ]
+    }
+}
